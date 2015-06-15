@@ -1,2 +1,2 @@
-# bayes_api
-Api of the bayes application
+# Bayes Server
+Server part of the bayes application
