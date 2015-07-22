@@ -21,7 +21,7 @@ class RequestHandler(pyjsonrpc.HttpRequestHandler):
         porttree = portage.db[portage.root]['porttree']
         vartree = portage.db[portage.root]['vartree']
         ins_pkg = []
-        for cp in porttree.dbapi.cp_all():
+        for cp in porttree.dbapi.cpv_all():
             ins_pkg.append(cp)
         return ins_pkg
 
