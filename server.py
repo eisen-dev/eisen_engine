@@ -21,8 +21,9 @@ class RequestHandler(pyjsonrpc.HttpRequestHandler):
         porttree = portage.db[portage.root]['porttree']
         vartree = portage.db[portage.root]['vartree']
         ins_pkg = []
-        for cp in porttree.dbapi.cpv_all():
-            ins_pkg.append(cp)
+        for cp in porttree.dbapi.cp_all():
+            for i in porttree.dbapi.cp_list(cp):
+                ins_pkg.append(portage.catpkgsplit(i))
         return ins_pkg
 
 # Threading HTTP-Server
