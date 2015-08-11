@@ -2,19 +2,28 @@
 # coding: utf-8
 
 import pyjsonrpc
+import portage
+from gentoolkit.package import Package
 
 
 class RequestHandler(pyjsonrpc.HttpRequestHandler):
 
   @pyjsonrpc.rpcmethod
-  def add(self, a, b):
-      """Test method"""
-      return a+b
+  def get_all_packages_sha1(overlay_path):
+        """Returns all packages sha1.
+        """
+        packages = {}
+        porttree = portage.db[portage.root]['porttree']
+        vartree = portage.db[portage.root]['vartree']
+        ins_pkg = []
+        for cp in porttree.dbapi.cp_all():
+            for i in porttree.dbapi.cp_list(cp):
+                ins_pkg.append(portage.catpkgsplit(i))
+        sha1= hashlib.sha1(str(ins_pkg)).hexdigest()
+        return sha1
 
   @pyjsonrpc.rpcmethod
   def get_all_packages(overlay_path):
-        import portage
-        from gentoolkit.package import Package
         """Returns all packages from a given overlay path.
         """
         packages = {}
@@ -28,9 +37,7 @@ class RequestHandler(pyjsonrpc.HttpRequestHandler):
 
   @pyjsonrpc.rpcmethod
   def get_installed_packages(overlay_path):
-        import portage
-        from gentoolkit.package import Package
-        """Returns all packages from a given overlay path.
+        """Returns installed packages from a given overlay path.
         """
         packages = {}
         porttree = portage.db[portage.root]['porttree']
@@ -40,6 +47,20 @@ class RequestHandler(pyjsonrpc.HttpRequestHandler):
             for i in vartree.dbapi.cp_list(cp):
                 ins_pkg.append(portage.catpkgsplit(i))
         return ins_pkg
+
+  @pyjsonrpc.rpcmethod
+  def get_installed_packages_sha1(overlay_path):
+        """Returns installed packages sha1.
+        """
+        packages = {}
+        porttree = portage.db[portage.root]['porttree']
+        vartree = portage.db[portage.root]['vartree']
+        ins_pkg = []
+        for cp in porttree.dbapi.cp_all():
+            for i in vartree.dbapi.cp_list(cp):
+                ins_pkg.append(portage.catpkgsplit(i))
+        sha1= hashlib.sha1(str(ins_pkg)).hexdigest()
+        return sha1
 
 # Threading HTTP-Server
 http_server = pyjsonrpc.ThreadingHttpServer(
