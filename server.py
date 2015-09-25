@@ -4,7 +4,7 @@
 import pyjsonrpc
 import portage
 from gentoolkit.package import Package
-
+import hashlib
 
 class RequestHandler(pyjsonrpc.HttpRequestHandler):
 
