@@ -4,9 +4,17 @@
 import pyjsonrpc
 import portage
 from gentoolkit.package import Package
+from _emerge import main
 import hashlib
 
 class RequestHandler(pyjsonrpc.HttpRequestHandler):
+
+  @pyjsonrpc.rpcmethod
+  def install_package(package):
+        """install package.
+        """
+        main.emerge_main(['-v',package])
+        return sha1
 
   @pyjsonrpc.rpcmethod
   def get_all_packages_sha1(overlay_path):
