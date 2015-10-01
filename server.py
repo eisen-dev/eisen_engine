@@ -6,15 +6,32 @@ import portage
 from gentoolkit.package import Package
 from _emerge import main
 import hashlib
+import subprocess
+import threading
+import time
+import Queue
 
 class RequestHandler(pyjsonrpc.HttpRequestHandler):
 
+  def emerge(self,package):
+        bashCommand = "emerge -v "+package+" 2>&1 \n"
+        print bashCommand
+        UND = subprocess.Popen(bashCommand, stdout=subprocess.PIPE, shell=True)
+        for line in UND.stdout:
+            return line.strip('\n')
+
   @pyjsonrpc.rpcmethod
-  def install_package(package):
+  def install_package(self,package):
         """install package.
         """
-        main.emerge_main(['-v',package])
-        return sha1
+        q = Queue.Queue()
+        print package
+        t = threading.Thread(target=self.emerge, args=[package])
+        t.daemon = True
+        t.start()
+        s = q.get()
+        return s
+  
 
   @pyjsonrpc.rpcmethod
   def get_all_packages_sha1(overlay_path):
