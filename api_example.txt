@@ -1,30 +1,35 @@
+///todo/api/v1.0/server
+{
+    "host": {
+        "busy": true,
+        "hosts": "192.168.233.130",
+        "module": "Ansible",
+        "uri": "/todo/api/v1.0/host"
+    }
+}
+
 ///todo/api/v1.0/groups
 {
     "groups": [
         {
-            "busy": true,
             "group": "ungrouped",
             "hosts": "[]",
-            "module": "ping"
-            "uri": "/todo/api/v1.0/host/1"
+            "uri": "/todo/api/v1.0/group/1"
         },
         {
-            "busy": true,
             "group": "all",
             "hosts": "['192.168.233.129', '192.168.233.131', '192.168.0.211']",
-            "uri": "/todo/api/v1.0/host/2"
+            "uri": "/todo/api/v1.0/group/2"
         },
         {
-            "busy": true,
             "group": "vmware",
             "hosts": "['192.168.233.129', '192.168.233.131']",
-            "uri": "/todo/api/v1.0/host/3"
+            "uri": "/todo/api/v1.0/group/3"
         },
         {
-            "busy": true,
             "group": "atom",
             "hosts": "['192.168.0.211']",
-            "uri": "/todo/api/v1.0/host/4"
+            "uri": "/todo/api/v1.0/group/4"
         }
     ]
 }
@@ -36,7 +41,7 @@
         "group": "all",
         "hosts": "['192.168.233.129', '192.168.233.131', '192.168.0.211']",
         "tasks": "ping",
-        "uri": "/todo/api/v1.0/host/2"
+        "uri": "/todo/api/v1.0/group/2"
     }
 }
 
@@ -63,7 +68,7 @@
             "group": "atom",
             "hosts": "['192.168.0.211']",
             "tasks": "ping",
-            "uri": "/todo/api/v1.0/host/4"
+            "uri": "/todo/api/v1.0/task/1"
     }
 }
 
@@ -92,7 +97,7 @@
 ///todo/api/v1.0/recipes
 {
     "task": {
-            "busy": true,
+            "folder": "/path/to/main/playbook.yml",
             "group": "atom",
             "hosts": "['192.168.0.211']",
             "tasks": "ping",
