@@ -22,6 +22,7 @@ def ModulesList():
     #return(mod)
 
 def use_module():
+    # API chooser
     module = Ansible;
     return module
 
@@ -32,3 +33,11 @@ def HostsList(module):
 def GroupsList(module):
     groups = module.GroupsList()
     return groups
+
+def TasksList(module):
+    tasks = module.GroupsList()
+    return tasks
+
+def RunTask(module, hosts, command):
+    tasks = module.RunTask(hosts, command)
+    return tasks
