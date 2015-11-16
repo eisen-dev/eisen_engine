@@ -5,11 +5,14 @@ from core import dispatcher
 
 auth = HTTPBasicAuth()
 
+
 @auth.get_password
 def get_password(username):
     if username == 'ansible':
         return 'default'
     return None
+
+
 group_fields = {
     'hosts': fields.String,
     'group': fields.String,
@@ -17,6 +20,7 @@ group_fields = {
 }
 module = dispatcher.use_module()
 groups = dispatcher.GroupsList(module)
+
 
 class GroupsAPI(Resource):
     decorators = [auth.login_required]
@@ -42,6 +46,7 @@ class GroupsAPI(Resource):
         }
         groups.append(group)
         return {'host': marshal(group, group_fields)}, 201
+
 
 class GroupAPI(Resource):
     decorators = [auth.login_required]

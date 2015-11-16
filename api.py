@@ -13,6 +13,7 @@ app = Flask(__name__, static_url_path="")
 api = Api(app)
 auth = HTTPBasicAuth()
 
+
 @auth.get_password
 def get_password(username):
     if username == 'ansible':
@@ -26,6 +27,7 @@ def unauthorized():
     # auth dialog
     return make_response(jsonify({'message': 'Unauthorized access'}), 403)
 
+
 api.add_resource(GroupsList.GroupsAPI, '/todo/api/v1.0/groups', endpoint='groups')
 api.add_resource(GroupsList.GroupAPI, '/todo/api/v1.0/group/<int:id>', endpoint='group')
 api.add_resource(HostsList.HostsAPI, '/todo/api/v1.0/hosts', endpoint='hosts')
@@ -35,4 +37,4 @@ api.add_resource(Tasks.TaskAPI, '/todo/api/v1.0/task/<int:id>', endpoint='Task')
 api.add_resource(Tasks.TaskRunAPI, '/todo/api/v1.0/task/<int:id>/run', endpoint='TaskRun')
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')

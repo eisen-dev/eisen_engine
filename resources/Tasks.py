@@ -5,11 +5,13 @@ from core import dispatcher
 
 auth = HTTPBasicAuth()
 
+
 @auth.get_password
 def get_password(username):
     if username == 'ansible':
         return 'default'
     return None
+
 
 task_fields = {
     'hosts': fields.String,
@@ -19,6 +21,7 @@ task_fields = {
 
 module = dispatcher.use_module()
 tasks = dispatcher.TasksList(module)
+
 
 class TasksAPI(Resource):
     decorators = [auth.login_required]
@@ -44,6 +47,7 @@ class TasksAPI(Resource):
         }
         tasks.append(task)
         return {'task': marshal(task, task_fields)}, 201
+
 
 class TaskAPI(Resource):
     decorators = [auth.login_required]
@@ -78,6 +82,7 @@ class TaskAPI(Resource):
         tasks.remove(task[0])
         return {'result': True}
 
+
 class TaskRunAPI(Resource):
     decorators = [auth.login_required]
 
@@ -90,8 +95,8 @@ class TaskRunAPI(Resource):
     def get(self, id):
         task = [task for task in tasks if task['id'] == id]
         print (task)
-        hosts='101010'
-        command='eix'
+        hosts = '101010'
+        command = 'eix'
         task_fields = dispatcher.RunTask(module, hosts, command)
         if len(task) == 0:
             abort(404)

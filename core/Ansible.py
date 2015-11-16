@@ -5,6 +5,7 @@ from ansible import callbacks
 from ansible import utils
 import os
 
+
 def GroupsList():
     """
 
@@ -32,6 +33,7 @@ def GroupsList():
         groups.append(group)
     return groups
 
+
 def HostsList():
     """
 
@@ -55,6 +57,7 @@ def HostsList():
         hosts.append(host)
     return hosts
 
+
 def GroupsAvailability(hosts):
     pass
 
@@ -75,10 +78,12 @@ def RunTask(hosts, commands):
 def TasksList(hosts):
     pass
 
+
 def RecepieList():
     pass
 
-def RunRecepie(hosts,):
+
+def RunRecepie(hosts, ):
     # Boilerplace callbacks for stdout/stderr and log output
     utils.VERBOSITY = 0
     playbook_cb = callbacks.PlaybookCallbacks(verbose=utils.VERBOSITY)
@@ -87,7 +92,7 @@ def RunRecepie(hosts,):
 
     pb = PlayBook(
         playbook='/path/to/main/playbook.yml',
-        host_list=hosts.name, # Our hosts, the rendered inventory file
+        host_list=hosts.name,  # Our hosts, the rendered inventory file
         remote_user='some_user',
         callbacks=playbook_cb,
         runner_callbacks=runner_cb,

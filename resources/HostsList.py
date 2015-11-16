@@ -5,11 +5,13 @@ from core import dispatcher
 
 auth = HTTPBasicAuth()
 
+
 @auth.get_password
 def get_password(username):
     if username == 'ansible':
         return 'default'
     return None
+
 
 host_fields = {
     'host': fields.String,
@@ -17,6 +19,7 @@ host_fields = {
 }
 module = dispatcher.use_module()
 hosts = dispatcher.HostsList(module)
+
 
 class HostsAPI(Resource):
     decorators = [auth.login_required]
@@ -42,6 +45,7 @@ class HostsAPI(Resource):
         }
         hosts.append(host)
         return {'host': marshal(host, host_fields)}, 201
+
 
 class HostAPI(Resource):
     decorators = [auth.login_required]
