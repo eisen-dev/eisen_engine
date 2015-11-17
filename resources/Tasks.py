@@ -93,7 +93,7 @@ class TaskRunAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('host', type=str, location='json')
+        self.reqparse.add_argument('hosts', type=str, location='json')
         self.reqparse.add_argument('command', type=str, location='json')
         self.reqparse.add_argument('module', type=str, location='json')
         super(TaskRunAPI, self).__init__()

@@ -39,9 +39,6 @@ class HostsAPI(Resource):
         host = {
             'id': hosts[-1]['id'] + 1,
             'host': args['host'],
-            'jobs': args['jobs'],
-            'group': args['groups'],
-            'busy': False
         }
         hosts.append(host)
         return {'host': marshal(host, host_fields)}, 201
