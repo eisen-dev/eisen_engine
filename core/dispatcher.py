@@ -40,10 +40,10 @@ def GroupsList(module):
 
 
 def TasksList(module):
-    tasks = module.GroupsList()
+    tasks = module.TasksStart()
     return tasks
 
 
-def RunTask(module, hosts, command):
-    tasks = module.RunTask(hosts, command)
+def RunTask(module, hosts, command, mod):
+    tasks = module.RunTask(hosts, command, mod)
     return tasks

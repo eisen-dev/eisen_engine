@@ -16,7 +16,7 @@ def get_password(username):
 group_fields = {
     'hosts': fields.String,
     'group': fields.String,
-    'uri': fields.Url('host')
+    'uri': fields.Url('group')
 }
 module = dispatcher.use_module()
 groups = dispatcher.GroupsList(module)
