@@ -5,21 +5,20 @@ from core import dispatcher
 
 auth = HTTPBasicAuth()
 
-
+#TODO make password auth to be same for all resource
 @auth.get_password
 def get_password(username):
     if username == 'ansible':
         return 'default'
     return None
 
-
 host_fields = {
     'host': fields.String,
+    'groups': fields.String,
     'uri': fields.Url('host')
 }
 module = dispatcher.use_module()
 hosts = dispatcher.HostsList(module)
-
 
 class HostsAPI(Resource):
     decorators = [auth.login_required]
@@ -27,6 +26,9 @@ class HostsAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('host', type=str, required=True,
+                                   help='No task title provided',
+                                   location='json')
+        self.reqparse.add_argument('groups', type=str, required=True,
                                    help='No task title provided',
                                    location='json')
         super(HostsAPI, self).__init__()
@@ -39,10 +41,10 @@ class HostsAPI(Resource):
         host = {
             'id': hosts[-1]['id'] + 1,
             'host': args['host'],
+            'groups': args['host'],
         }
         hosts.append(host)
         return {'host': marshal(host, host_fields)}, 201
-
 
 class HostAPI(Resource):
     decorators = [auth.login_required]

@@ -18,21 +18,33 @@ def ModulesList():
     #    mod[i]=(__import__('core.'+ i))
     return __all__
 
-
 # return usable mod
 # def installed_mod():
 # return(mod)
+
+#TODO make the Agent  Module be choosen using API
+#update and only 1 agent module is needed
+def AgentInfo(module=None):
+    """
+
+    :rtype: object
+    """
+    agents = []
+    agent = {
+        'id': 1,
+        'module': 'Ansible',
+    }
+    agents.append(agent)
+    return agents
 
 def use_module():
     # API chooser
     module = Ansible;
     return module
 
-
 def HostsList(module):
     hosts = module.HostsList()
     return hosts
-
 
 def GroupsList(module):
     groups = module.GroupsList()

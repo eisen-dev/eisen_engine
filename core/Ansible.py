@@ -14,7 +14,7 @@ def GroupsList():
     groups = []
     a = inventory.Inventory()
     data = a.groups_list()
-
+    print (data)
     for i in data:
         try:
             group = {
@@ -34,6 +34,14 @@ def GroupsList():
 def GroupsAvailability(hosts):
     pass
 
+def search(values, searchFor):
+    founds = []
+    for k in values:
+        for v in values[k]:
+            if searchFor in v:
+                founds.append(k)
+    return founds
+
 def HostsList():
     """
 
@@ -42,17 +50,23 @@ def HostsList():
     hosts = []
     a = inventory.Inventory()
     data = a.list_hosts()
+    a = inventory.Inventory()
+    groups = a.groups_list()
+    print groups
     print data
     for i in range(len(data)):
+        group = search(groups,data[i])
         try:
             host = {
                 'id': hosts[-1]['id'] + 1,
                 'host': str(data[i]),
+                'groups': group
             }
         except:
             host = {
                 'id': 1,
                 'host': data[i],
+                'groups': group
             }
         hosts.append(host)
     return hosts

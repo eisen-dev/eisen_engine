@@ -8,11 +8,11 @@ from flask.ext.httpauth import HTTPBasicAuth
 from resources import GroupsList
 from resources import HostsList
 from resources import Tasks
+from resources import AgentInfo
 
 app = Flask(__name__, static_url_path="")
 api = Api(app)
 auth = HTTPBasicAuth()
-
 
 @auth.get_password
 def get_password(username):
@@ -20,14 +20,13 @@ def get_password(username):
         return 'default'
     return None
 
-
 @auth.error_handler
 def unauthorized():
     # return 403 instead of 401 to prevent browsers from displaying the default
     # auth dialog
     return make_response(jsonify({'message': 'Unauthorized access'}), 403)
 
-
+api.add_resource(AgentInfo.AgentAPI, '/todo/api/v1.0/agent', endpoint='agent')
 api.add_resource(GroupsList.GroupsAPI, '/todo/api/v1.0/groups', endpoint='groups')
 api.add_resource(GroupsList.GroupAPI, '/todo/api/v1.0/group/<int:id>', endpoint='group')
 api.add_resource(HostsList.HostsAPI, '/todo/api/v1.0/hosts', endpoint='hosts')
