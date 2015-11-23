@@ -41,12 +41,28 @@ class TasksAPI(Resource):
     def get(self):
         return {'tasks': [marshal(task, task_fields) for task in tasks]}
 
+    def html_decode(self,s):
+        """
+        Returns the ASCII decoded version of the given HTML string. This does
+        NOT remove normal HTML tags like <p>.
+        """
+        htmlCodes = (
+                ("'", '&#39;'),
+                ('"', '&quot;'),
+                ('>', '&gt;'),
+                ('<', '&lt;'),
+                ('&', '&amp;')
+            )
+        for code in htmlCodes :
+            s = s.replace(code[1], code[0])
+        return s
+
     def post(self):
         args = self.reqparse.parse_args()
         task = {
             'id': tasks[-1]['id'] + 1,
             'hosts': args['hosts'],
-            'command': args['command'],
+            'command': self.html_decode(args['command']),
             'module': args['module'],
         }
         tasks.append(task)
