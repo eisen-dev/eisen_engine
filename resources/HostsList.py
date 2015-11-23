@@ -28,8 +28,7 @@ class HostsAPI(Resource):
         self.reqparse.add_argument('host', type=str, required=True,
                                    help='No task title provided',
                                    location='json')
-        self.reqparse.add_argument('groups', type=str, required=True,
-                                   help='No task title provided',
+        self.reqparse.add_argument('groups', type=str, default="",
                                    location='json')
         super(HostsAPI, self).__init__()
 
@@ -41,7 +40,7 @@ class HostsAPI(Resource):
         host = {
             'id': hosts[-1]['id'] + 1,
             'host': args['host'],
-            'groups': args['host'],
+            'groups': args['groups'],
         }
         hosts.append(host)
         return {'host': marshal(host, host_fields)}, 201
