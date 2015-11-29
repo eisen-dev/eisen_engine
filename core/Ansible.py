@@ -14,7 +14,6 @@ def GroupsList():
     groups = []
     a = inventory.Inventory()
     data = a.groups_list()
-    print (data)
     for i in data:
         try:
             group = {
@@ -49,11 +48,15 @@ def HostsList():
     """
     hosts = []
     a = inventory.Inventory()
+    # data example
+    # ['192.168.233.129', '192.168.233.131', '192.168.0.211']
     data = a.list_hosts()
-    a = inventory.Inventory()
+    # groups example
+    # {'ungrouped': [],
+    #  'all': ['192.168.233.129', '192.168.233.131', '192.168.0.211'],
+    #  'vmware': ['192.168.233.129', '192.168.233.131'],
+    #  'atom': ['192.168.0.211']}
     groups = a.groups_list()
-    print groups
-    print data
     for i in range(len(data)):
         group = search(groups,data[i])
         try:
@@ -87,9 +90,51 @@ def TasksStart():
         tasks.append(task)
     return tasks
 
-def RunTask(hosts, commands, module):
-    #  __init__(self, host_list='/etc/ansible/hosts', module_path=None, module_name='command', module_args='', forks=5, timeout=10, pattern='*', remote_user='root', remote_pass=None, remote_port=None, private_key_file=None, background=0, basedir=None, setup_cache=None, vars_cache=None, transport='smart', conditional='True', callbacks=None, module_vars=None, play_vars=None, play_file_vars=None, role_vars=None, role_params=None, default_vars=None, extra_vars=None, is_playbook=False, inventory=None, subset=None, check=False, diff=False, environment=None, complex_args=None, error_on_undefined_vars=True, accelerate=False, accelerate_ipv6=False, accelerate_port=None, vault_pass=None, run_hosts=None, no_log=False, run_once=False, become=False, become_method='sudo', become_user=None, become_pass=None, become_exe=None)
-    runner = ansible.runner.Runner(module_name=module, module_args=commands, pattern=hosts, )
+def RunTask(hosts, commands, module, inv):
+        #  __init__(self, host_list='/etc/ansible/hosts',
+        #  module_path=None, module_name='command',
+        #  module_args='',
+        #  forks=5,
+        #  timeout=10,
+        #  pattern='*',
+        #  remote_user='root',
+        #  remote_pass=None,
+        #  remote_port=None,
+        #  private_key_file=None,
+        #  background=0,
+        #  basedir=None,
+        #  setup_cache=None,
+        #  vars_cache=None,
+        #  transport='smart',
+        #  conditional='True',
+        #  callbacks=None,
+        #  module_vars=None,
+        #  play_vars=None,
+        #  play_file_vars=None,
+        #  role_vars=None,
+        #  role_params=None,
+        #  default_vars=None,
+        #  extra_vars=None,
+        #  is_playbook=False,
+        #  inventory=None,
+        #  subset=None,
+        #  check=False,
+        #  diff=False,
+        #  environment=None,
+        #  complex_args=None,
+        #  error_on_undefined_vars=True,
+        #  accelerate=False,
+        #  accelerate_ipv6=False,
+        #  accelerate_port=None,
+        #  vault_pass=None,
+        #  run_hosts=None,
+        #  no_log=False,
+        #  run_once=False,
+        #  become=False, become_method='sudo',
+        #  become_user=None, become_pass=None,
+        #  become_exe=None)
+    runner = ansible.runner.Runner(module_name=module, module_args=commands,
+                                   pattern=hosts,inventory=inv )
     get_facts = runner.run()
     return get_facts
 

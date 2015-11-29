@@ -2,7 +2,7 @@ from flask import Flask, jsonify, abort, make_response
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth
 from core import dispatcher
-
+import core.AnsibleInv as ans_inv
 auth = HTTPBasicAuth()
 
 #TODO make password auth to be same for all resource
@@ -37,12 +37,19 @@ class HostsAPI(Resource):
 
     def post(self):
         args = self.reqparse.parse_args()
+        inv_host = ans_inv.set_host(args['host'],'22')
+        inv_host = ans_inv.set_host_variable('ansible_ssh_pass','3mendo3',inv_host)
+        inv_group = ans_inv.set_group(args['groups'])
+        inv_group = ans_inv.set_group_host(inv_group,inv_host)
+        ans_inv.set_inv(inv_group)
         host = {
             'id': hosts[-1]['id'] + 1,
             'host': args['host'],
             'groups': args['groups'],
         }
         hosts.append(host)
+        inv = ans_inv.get_inv()
+        print (inv.groups_list())
         return {'host': marshal(host, host_fields)}, 201
 
 class HostAPI(Resource):

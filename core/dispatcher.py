@@ -2,6 +2,7 @@ import glob
 from genericpath import isfile
 from os.path import dirname, basename
 import Ansible
+import core.AnsibleInv as ans_inv
 
 
 def ModulesList():
@@ -57,5 +58,6 @@ def TasksList(module):
 
 
 def RunTask(module, hosts, command, mod):
-    tasks = module.RunTask(hosts, command, mod)
+    inv = ans_inv.get_inv()
+    tasks = module.RunTask(hosts, command, mod, inv)
     return tasks
