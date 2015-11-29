@@ -31,6 +31,7 @@ def get_password(username):
 
 host_fields = {
     'host': fields.String,
+    'port': fields.String,
     'groups': fields.String,
     'uri': fields.Url('host')
 }
@@ -45,6 +46,9 @@ class HostsAPI(Resource):
         self.reqparse.add_argument('host', type=str, required=True,
                                    help='No task title provided',
                                    location='json')
+        self.reqparse.add_argument('port', type=str, required=True,
+                                   help='No task title provided',
+                                   location='json')
         self.reqparse.add_argument('groups', type=str, default="",
                                    location='json')
         super(HostsAPI, self).__init__()
@@ -55,7 +59,7 @@ class HostsAPI(Resource):
     def post(self):
         args = self.reqparse.parse_args()
         inv_host = ans_inv.set_host(args['host'],'22')
-        inv_host = ans_inv.set_host_variable('ansible_ssh_pass','3mendo3',inv_host)
+        inv_host = ans_inv.set_host_variable('ansible_ssh_pass','1234',inv_host)
         inv_group = ans_inv.set_group(args['groups'])
         inv_group = ans_inv.set_group_host(inv_group,inv_host)
         ans_inv.set_inv(inv_group)
@@ -93,6 +97,65 @@ class HostAPI(Resource):
             if v is not None:
                 host[k] = v
         return {'host': marshal(host, host_fields)}
+
+    def delete(self, id):
+        host = [host for host in hosts if host['id'] == id]
+        if len(host) == 0:
+            abort(404)
+        hosts.remove(host[0])
+        return {'result': True}
+
+var_fields = {
+    'host': fields.String,
+    'variable_key': fields.String,
+    'variable_value': fields.String,
+    'uri': fields.Url('host')
+}
+
+class HostVarsAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('host', type=str, location='json')
+        self.reqparse.add_argument('variable_key', type=str, location='json')
+        self.reqparse.add_argument('variable_value', type=str, location='json')
+        super(HostVarsAPI, self).__init__()
+
+    def get(self, id):
+        vars = dispatcher.HostVarsList(module, id)
+        print vars
+        return {'var': [marshal(var, var_fields) for var in vars]}
+
+    def post(self):
+        args = self.reqparse.parse_args()
+        # inv_host = ans_inv.set_host(args['host'],'22')
+        # inv_host = ans_inv.set_host_variable('ansible_ssh_pass','1234',inv_host)
+        # inv_group = ans_inv.set_group(args['groups'])
+        # inv_group = ans_inv.set_group_host(inv_group,inv_host)
+        # ans_inv.set_inv(inv_group)
+        host = {
+            'id': hosts[-1]['id'] + 1,
+            'host': args['host'],
+            'variable_name': args['variable_name'],
+            'variable_key': args['variable_key'],
+
+        }
+        hosts.append(host)
+        inv = ans_inv.get_inv()
+        print (inv.groups_list())
+        return {'host': marshal(host, var_fields)}, 201
+
+    def put(self, id):
+        host = [host for host in hosts if host['id'] == id]
+        if len(host) == 0:
+            abort(404)
+        host = host[0]
+        args = self.reqparse.parse_args()
+        for k, v in args.items():
+            if v is not None:
+                host[k] = v
+        return {'host': marshal(host, var_fields)}
 
     def delete(self, id):
         host = [host for host in hosts if host['id'] == id]

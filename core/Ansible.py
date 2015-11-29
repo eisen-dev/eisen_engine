@@ -95,6 +95,63 @@ def HostsList():
         hosts.append(host)
     return hosts
 
+# return list of host variable json formatted from ansible inventory
+def HostVarsList(host):
+    """
+
+    :rtype: object
+    """
+    print host
+    vars = []
+    a = inventory.Inventory()
+    data = a.list_hosts()
+    print data[host]
+    host_vars = a.get_host(data[host]).get_variables()
+    for i in host_vars:
+        variable_key = i
+        variable_value = host_vars[i]
+        try:
+            var = {
+                'id': vars[-1]['id'] + 1,
+                'host': str(data[host]),
+                'variable_key': variable_key,
+                'variable_value': variable_value
+            }
+        except:
+            var = {
+                'id': 1,
+                'host': str(data[host]),
+                'variable_key': variable_key,
+                'variable_value': variable_value
+            }
+        vars.append(var)
+    return vars
+
+# return list of host variable json formatted from ansible inventory
+def GroupVarsList(group):
+    """
+
+    :rtype: object
+    """
+    vars = []
+    a = inventory.Inventory()
+    group_vars = a.get_group(group).get_variables()
+    for i in range(len(vars)):
+        try:
+            host = {
+                'id': len(vars)[-1]['id'] + 1,
+                'group': str(group[i]),
+                'groups': group
+            }
+        except:
+            host = {
+                'id': 1,
+                'host': data[i],
+                'groups': group
+            }
+        vars.append(host)
+    return vars
+
 # make a init task and return as json format
 def TasksStart():
     """

@@ -64,6 +64,14 @@ def HostsList(module):
     hosts = module.HostsList()
     return hosts
 
+def HostVarsList(module, host):
+    vars = module.HostVarsList(host)
+    return vars
+
+def GroupVarsList(module, group):
+    vars = module.GroupVarsList(group)
+    return vars
+
 def GroupsList(module):
     groups = module.GroupsList()
     return groups

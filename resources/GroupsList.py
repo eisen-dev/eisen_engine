@@ -58,7 +58,7 @@ class GroupsAPI(Resource):
         args = self.reqparse.parse_args()
         group = {
             'id': groups[-1]['id'] + 1,
-            'host': args['host'],
+            'hosts': args['hosts'],
             'group': args['groups'],
         }
         groups.append(group)
@@ -70,9 +70,43 @@ class GroupAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('host', type=str, location='json')
+        self.reqparse.add_argument('hosts', type=str, location='json')
         self.reqparse.add_argument('groups', type=str, location='json')
         super(GroupAPI, self).__init__()
+
+    def get(self, id):
+        group = [group for group in groups if group['id'] == id]
+        if len(group) == 0:
+            abort(404)
+        return {'host': marshal(group[0], group_fields)}
+
+    def put(self, id):
+        group = [group for group in groups if group['id'] == id]
+        if len(group) == 0:
+            abort(404)
+        group = group[0]
+        args = self.reqparse.parse_args()
+        for k, v in args.items():
+            if v is not None:
+                group[k] = v
+        return {'host': marshal(group, group_fields)}
+
+    def delete(self, id):
+        group = [group for group in groups if group['id'] == id]
+        if len(group) == 0:
+            abort(404)
+        groups.remove(group[0])
+        return {'result': True}
+
+class GroupVarsAPI(Resource):
+    decorators = [auth.login_required]
+
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('group', type=str, location='json')
+        self.reqparse.add_argument('variable', type=str, location='json')
+        self.reqparse.add_argument('group', type=str, location='json')
+        super(GroupVarsAPI, self).__init__()
 
     def get(self, id):
         group = [group for group in groups if group['id'] == id]

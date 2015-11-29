@@ -42,6 +42,10 @@ def set_group(name):
         inv_group = inventory.group.Group(name = name)
     return inv_group
 
+def set_group_variable(variable_name,variable,inv_host):
+    inv_host.set_variable(variable_name, variable)
+    return inv_host
+
 def set_group_host(inv_group, inv_host):
     inv_group.add_host(inv_host)
     return inv_group
