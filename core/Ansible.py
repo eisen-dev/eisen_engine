@@ -1,3 +1,20 @@
+# (c) 2012-2015, Alice Ferrazzi <alice.ferrazzi@gmail.com>
+#
+# This file is part of Eisen
+#
+# Eisen is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Eisen is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
+
 from ansible import inventory
 import ansible
 from ansible.playbook import PlayBook
@@ -5,7 +22,7 @@ from ansible import callbacks
 from ansible import utils
 import os
 
-
+# return list of groups json formatted from ansible inventory
 def GroupsList():
     """
 
@@ -30,9 +47,12 @@ def GroupsList():
         groups.append(group)
     return groups
 
+# ???
 def GroupsAvailability(hosts):
     pass
 
+# search if host is present in the group list
+# return the group name if found
 def search(values, searchFor):
     founds = []
     for k in values:
@@ -41,6 +61,7 @@ def search(values, searchFor):
                 founds.append(k)
     return founds
 
+# return list of host json formatted from ansible inventory
 def HostsList():
     """
 
@@ -74,6 +95,7 @@ def HostsList():
         hosts.append(host)
     return hosts
 
+# make a init task and return as json format
 def TasksStart():
     """
 
@@ -90,6 +112,7 @@ def TasksStart():
         tasks.append(task)
     return tasks
 
+# Run task
 def RunTask(hosts, commands, module, inv):
         #  __init__(self, host_list='/etc/ansible/hosts',
         #  module_path=None, module_name='command',
@@ -134,20 +157,20 @@ def RunTask(hosts, commands, module, inv):
         #  become_user=None, become_pass=None,
         #  become_exe=None)
     runner = ansible.runner.Runner(module_name=module, module_args=commands,
-                                   pattern=hosts,inventory=inv )
+                                   pattern=hosts, inventory=inv)
     get_facts = runner.run()
     return get_facts
 
-
+# not used ???
 def TasksList(hosts):
     pass
 
-
+# not used ???
 def RecepieList():
     pass
 
-
-def RunRecepie(hosts, ):
+# run playbook
+def RunRecepie(hosts):
     # Boilerplace callbacks for stdout/stderr and log output
     utils.VERBOSITY = 0
     playbook_cb = callbacks.PlaybookCallbacks(verbose=utils.VERBOSITY)
