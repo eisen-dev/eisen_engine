@@ -37,6 +37,7 @@ def test_success_auth():
     """
     username = 'ansible'
     password = 'default'
+
     rv = test_app.get('/eisen/api/v1.0/agent', headers={
         'Authorization': 'Basic ' + base64.b64encode(username +
                                                      ":" + password)
@@ -59,6 +60,7 @@ def test_hosts():
     """
     username = 'ansible'
     password = 'default'
+
     rv = test_app.get('/eisen/api/v1.0/hosts', headers={
         'Authorization': 'Basic ' + base64.b64encode(username +
                                                      ":" + password)
@@ -82,8 +84,9 @@ def test_post_new_host():
     """
     username = 'ansible'
     password = 'default'
-    host = dict(host="192.168.233.132", groups ="vmware")
-    rv = test_app.post('/eisen/api/v1.0/hosts',data = json.dumps(host),
+
+    host = dict(host="192.168.233.132", groups="vmware")
+    rv = test_app.post('/eisen/api/v1.0/hosts', data=json.dumps(host),
                        content_type='application/json',
                        headers={
                            'Authorization': 'Basic ' + base64.b64encode(username +
@@ -92,3 +95,27 @@ def test_post_new_host():
     check_content_type_json(rv.headers)
     # make sure we get a response
     eq_(rv.status_code, 201)
+
+
+def test_host():
+    """
+    get host 1 information
+
+    :var
+    Username: ansible
+    Password: default
+    """
+    username = 'ansible'
+    password = 'default'
+
+    rv = test_app.get('/eisen/api/v1.0/host/1',
+                      headers={'Authorization': 'Basic ' +
+                                                base64.b64encode(username +
+                                                                 ":" + password)
+                               })
+    check_content_type_json(rv.headers)
+    resp = json.loads(rv.data)
+    # make sure we get a response
+    eq_(rv.status_code, 200)
+    # make sure there are no users
+    eq_(len(resp), 1)
