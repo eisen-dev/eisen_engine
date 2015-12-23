@@ -46,7 +46,7 @@ class HostsAPI(Resource):
         self.reqparse.add_argument('host', type=str, required=True,
                                    help='No task title provided',
                                    location='json')
-        self.reqparse.add_argument('port', type=str, required=True,
+        self.reqparse.add_argument('os', type=str,
                                    help='No task title provided',
                                    location='json')
         self.reqparse.add_argument('groups', type=str, default="",
@@ -57,12 +57,16 @@ class HostsAPI(Resource):
         return {'host': [marshal(host, host_fields) for host in hosts]}
 
     def post(self):
+        """
+
+        :return:
+        """
         args = self.reqparse.parse_args()
-        inv_host = ans_inv.set_host(args['host'],'22')
-        inv_host = ans_inv.set_host_variable('ansible_ssh_pass','1234',inv_host)
-        inv_group = ans_inv.set_group(args['groups'])
+        inv_host = ans_inv.set_host(args['host'], '22')
+        #inv_host = ans_inv.set_host_variable('ansible_ssh_pass', '1234', inv_host)
+        inv_group = ans_inv.set_group(args['groups'], inv_host)
         inv_group = ans_inv.set_group_host(inv_group,inv_host)
-        ans_inv.set_inv(inv_group)
+        inv = ans_inv.set_inv(inv_group)
         host = {
             'id': hosts[-1]['id'] + 1,
             'host': args['host'],
@@ -127,7 +131,7 @@ class HostVarsAPI(Resource):
         print vars
         return {'var': [marshal(var, var_fields) for var in vars]}
 
-    def post(self):
+    def post(self, id):
         args = self.reqparse.parse_args()
         # inv_host = ans_inv.set_host(args['host'],'22')
         # inv_host = ans_inv.set_host_variable('ansible_ssh_pass','1234',inv_host)
@@ -137,8 +141,8 @@ class HostVarsAPI(Resource):
         host = {
             'id': hosts[-1]['id'] + 1,
             'host': args['host'],
-            'variable_name': args['variable_name'],
-            'variable_key': args['variable_key'],
+            'variable_name': args['variable_key'],
+            'variable_key': args['variable_value'],
 
         }
         hosts.append(host)
