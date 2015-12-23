@@ -43,6 +43,7 @@ def unauthorized():
     return make_response(jsonify({'message': 'Unauthorized access'}), 403)
 
 api.add_resource(AgentInfo.AgentAPI, '/eisen/api/v1.0/agent', endpoint='agent')
+
 api.add_resource(GroupsList.GroupsAPI, '/eisen/api/v1.0/groups', endpoint='groups')
 api.add_resource(GroupsList.GroupAPI, '/eisen/api/v1.0/group/<int:id>', endpoint='group')
 api.add_resource(GroupsList.GroupVarsAPI, '/eisen/api/v1.0/group/<int:id>/vars',
