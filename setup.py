@@ -25,5 +25,8 @@ setup(
     license='GPL2',
     author='Alice Ferrazzi',
     author_email='alice.ferrazzi@gmail.com',
-    description='eisen agent', requires=['nose', 'flask']
+    description='eisen agent',
+    requires=['Flask'],
+    test_require=['nose'],
+    test_suite='nose.collector'
 )
