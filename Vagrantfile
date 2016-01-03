@@ -71,5 +71,6 @@ Vagrant.configure(2) do |config|
     sudo pip install -r /vagrant/requirements.txt
     mkdir /etc/ansible/
     echo "localhost" > /etc/ansible/hosts
+    echo -e "Host *\n StrictHostKeyChecking no" > ~/.ssh/config
   SHELL
 end
