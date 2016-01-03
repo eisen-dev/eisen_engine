@@ -1,0 +1,6 @@
+celery
+Flask
+Flask-HTTPAuth
+Flask-RESTful
+ansible
+nose
