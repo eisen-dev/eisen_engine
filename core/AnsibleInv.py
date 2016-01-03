@@ -16,20 +16,22 @@
 # along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
 
 from ansible import inventory
-from Ansible import search
-import ansible
 
 inv = inventory.Inventory()
+
 
 def set_host(name, port):
     inv_host = inventory.host.Host(name = name, port = port)
     return inv_host
 
+
 def set_host_variable(variable_name,variable,inv_host):
     inv_host.set_variable(variable_name, variable)
     return inv_host
 
-def set_group(name):
+
+# setting a host to a group
+def set_group(name, host):
     a = inventory.Inventory()
     groups = a.groups_list()
     group_exist = False
@@ -37,23 +39,31 @@ def set_group(name):
         if name in i:
             group_exist=True
     if group_exist is True:
-        inv_group = inventory.get_group(name)
+        inv_group = a.get_group(name)
+        inv_group.add_host(host)
     else:
         inv_group = inventory.group.Group(name = name)
     return inv_group
+
 
 def set_group_variable(variable_name,variable,inv_host):
     inv_host.set_variable(variable_name, variable)
     return inv_host
 
+
 def set_group_host(inv_group, inv_host):
     inv_group.add_host(inv_host)
     return inv_group
 
+
 def set_inv(inv_group):
     global inv
-    inv.add_group(inv_group)
+    try:
+        inv.add_group(inv_group)
+    except:
+        pass
     return inv
+
 
 def get_inv():
     global inv
