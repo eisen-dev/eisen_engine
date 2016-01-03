@@ -38,7 +38,11 @@ host_fields = {
 module = dispatcher.use_module()
 hosts = dispatcher.HostsList(module)
 
+
 class HostsAPI(Resource):
+    """
+
+    """
     decorators = [auth.login_required]
 
     def __init__(self):
@@ -63,7 +67,6 @@ class HostsAPI(Resource):
         """
         args = self.reqparse.parse_args()
         inv_host = ans_inv.set_host(args['host'], '22')
-        #inv_host = ans_inv.set_host_variable('ansible_ssh_pass', '1234', inv_host)
         inv_group = ans_inv.set_group(args['groups'], inv_host)
         inv_group = ans_inv.set_group_host(inv_group,inv_host)
         inv = ans_inv.set_inv(inv_group)
@@ -77,7 +80,11 @@ class HostsAPI(Resource):
         print (inv.groups_list())
         return {'host': marshal(host, host_fields)}, 201
 
+
 class HostAPI(Resource):
+    """
+
+    """
     decorators = [auth.login_required]
 
     def __init__(self):
@@ -116,7 +123,11 @@ var_fields = {
     'uri': fields.Url('host')
 }
 
+
 class HostVarsAPI(Resource):
+    """
+
+    """
     decorators = [auth.login_required]
 
     def __init__(self):
@@ -127,8 +138,19 @@ class HostVarsAPI(Resource):
         super(HostVarsAPI, self).__init__()
 
     def get(self, id):
+        """
+        retrive variable information per host
+
+        :param id:
+        :return:
+        """
+        # correcting id for get the right information
+        # because /host/<id>/ start from 1 not 0
+        id -= 1
+        if id < 0:
+            return make_response(jsonify({'message': 'Id '+str(id+1)+' not exist'}), 400)
+
         vars = dispatcher.HostVarsList(module, id)
-        print vars
         return {'var': [marshal(var, var_fields) for var in vars]}
 
     def post(self, id):

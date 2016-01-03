@@ -17,7 +17,7 @@
 import glob
 from genericpath import isfile
 from os.path import dirname, basename
-import Ansible
+import AnsibleWrap
 import core.AnsibleInv as ans_inv
 import ansible
 
@@ -57,15 +57,15 @@ def AgentInfo(module=None):
 
 def use_module():
     # API chooser
-    module = Ansible
+    module = AnsibleWrap
     return module
 
 def HostsList(module):
     hosts = module.HostsList()
     return hosts
 
-def HostVarsList(module, host):
-    vars = module.HostVarsList(host)
+def HostVarsList(module, id):
+    vars = module.HostVarsList(id)
     return vars
 
 def GroupVarsList(module, group):

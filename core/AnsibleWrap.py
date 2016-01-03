@@ -20,7 +20,9 @@ import ansible
 from ansible.playbook import PlayBook
 from ansible import callbacks
 from ansible import utils
+import AnsibleInv
 import os
+
 
 # return list of groups json formatted from ansible inventory
 def GroupsList():
@@ -47,9 +49,11 @@ def GroupsList():
         groups.append(group)
     return groups
 
+
 # ???
 def GroupsAvailability(hosts):
     pass
+
 
 # search if host is present in the group list
 # return the group name if found
@@ -60,6 +64,7 @@ def search(values, searchFor):
             if searchFor in v:
                 founds.append(k)
     return founds
+
 
 # return list of host json formatted from ansible inventory
 def HostsList():
@@ -96,31 +101,32 @@ def HostsList():
     return hosts
 
 # return list of host variable json formatted from ansible inventory
-def HostVarsList(host):
+def HostVarsList(id):
     """
 
     :rtype: object
     """
-    print host
+    print id
     vars = []
-    a = inventory.Inventory()
+    a = AnsibleInv.get_inv()
+    #a = inventory.Inventory()
     data = a.list_hosts()
-    print data[host]
-    host_vars = a.get_host(data[host]).get_variables()
+    print data[id]
+    host_vars = a.get_host(data[id]).get_variables()
     for i in host_vars:
         variable_key = i
         variable_value = host_vars[i]
         try:
             var = {
                 'id': vars[-1]['id'] + 1,
-                'host': str(data[host]),
+                'host': str(data[id]),
                 'variable_key': variable_key,
                 'variable_value': variable_value
             }
         except:
             var = {
                 'id': 1,
-                'host': str(data[host]),
+                'host': str(data[id]),
                 'variable_key': variable_key,
                 'variable_value': variable_value
             }
@@ -162,7 +168,7 @@ def TasksStart():
     for i in range(1):
         task = {
             'id': i+1,
-            'hosts': '192.168.233.129',
+            'hosts': 'localhost',
             'command' : '',
             'module' : 'ping',
         }
