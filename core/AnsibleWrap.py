@@ -101,18 +101,18 @@ def HostsList():
         hosts.append(host)
     return hosts
 
-# return list of host variable json formatted from ansible inventory
+# return list of host variable json mapping from ansible inventory
 def HostVarsList(id):
     """
 
     :rtype: object
     """
-    print id
+    # init for contain the variable values
     vars = []
+    # get the dynamic inventory
     a = AnsibleInv.get_inv()
-    #a = inventory.Inventory()
+    # check for host
     data = a.list_hosts()
-    print data[id]
     host_vars = a.get_host(data[id]).get_variables()
     for i in host_vars:
         variable_key = i
@@ -180,48 +180,15 @@ def TasksStart():
 @celery_work.task
 def RunTask(hosts, commands, module, inv):
     """
-        __init__(self, host_list='/etc/ansible/hosts',
-        module_path=None, module_name='command',
-        module_args='',
-        forks=5,
-        timeout=10,
-        pattern='*',
-        remote_user='root',
-        remote_pass=None,
-        remote_port=None,
-        private_key_file=None,
-        background=0,
-        basedir=None,
-        setup_cache=None,
-        vars_cache=None,
-        transport='smart',
-        conditional='True',
-        callbacks=None,
-        module_vars=None,
-        play_vars=None,
-        play_file_vars=None,
-        role_vars=None,
-        role_params=None,
-        default_vars=None,
-        extra_vars=None,
-        is_playbook=False,
-        inventory=None,
-        subset=None,
-        check=False,
-        diff=False,
-        environment=None,
-        complex_args=None,
-        error_on_undefined_vars=True,
-        accelerate=False,
-        accelerate_ipv6=False,
-        accelerate_port=None,
-        vault_pass=None,
-        run_hosts=None,
-        no_log=False,
-        run_once=False,
-        become=False, become_method='sudo',
-        become_user=None, become_pass=None,
-        become_exe=None)
+    Running task with celery worker
+    be sure the celery worker is running
+
+    :param self:
+    :param hosts:
+    :param commands:
+    :param module:
+    :param inv:
+    :return:
     """
     runner = ansible.runner.Runner(module_name=module, module_args=commands,
                                    pattern=hosts, inventory=inv)

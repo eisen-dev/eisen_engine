@@ -80,6 +80,11 @@ def GroupsList(module):
 
 
 def TasksList(module):
+    """
+    making the init example task
+    :param module:
+    :return: Json
+    """
     #TODO (alice): maybe default task is a better name?
     tasks = module.TasksStart()
     return tasks

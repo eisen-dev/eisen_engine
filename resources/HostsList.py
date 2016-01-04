@@ -148,18 +148,28 @@ class HostVarsAPI(Resource):
         # because /host/<id>/ start from 1 not 0
         id -= 1
         if id < 0:
-            return make_response(jsonify({'message': 'Id '+str(id+1)+' not exist'}), 400)
+            return make_response(jsonify({'message': 'Id '+str(id+1)+' not exist'}), 403)
 
-        vars = dispatcher.HostVarsList(module, id)
+        # try to get host variable
+        try:
+            vars = dispatcher.HostVarsList(module, id)
+        except:
+            return make_response(jsonify({'message': 'Id '+str(id+1)+' not found'}), 403)
+
         return {'var': [marshal(var, var_fields) for var in vars]}
 
     def post(self, id):
+        """
+
+        :param id:
+        :return:
+        """
         args = self.reqparse.parse_args()
-        # inv_host = ans_inv.set_host(args['host'],'22')
-        # inv_host = ans_inv.set_host_variable('ansible_ssh_pass','1234',inv_host)
-        # inv_group = ans_inv.set_group(args['groups'])
-        # inv_group = ans_inv.set_group_host(inv_group,inv_host)
-        # ans_inv.set_inv(inv_group)
+
+        inv_host = ans_inv.dynamic_inventory.get_host(args['host'])
+        ans_inv.set_host_variable(args['variable_key'],
+                                             args['variable_value'],
+                                             inv_host)
         host = {
             'id': hosts[-1]['id'] + 1,
             'host': args['host'],

@@ -16,8 +16,9 @@
 # along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
 
 from ansible import inventory
+from core import dynamic_inventory
 
-inv = inventory.Inventory()
+inv = dynamic_inventory
 
 
 def set_host(name, port):
