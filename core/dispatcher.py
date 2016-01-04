@@ -20,6 +20,8 @@ from os.path import dirname, basename
 import AnsibleWrap
 import core.AnsibleInv as ans_inv
 import ansible
+# using global tasks_result dictionary for keeping the async result
+from core import tasks_result
 
 def ModulesList():
     modules = glob.glob(dirname(__file__) + "/*.py")
@@ -78,11 +80,34 @@ def GroupsList(module):
 
 
 def TasksList(module):
+    #TODO (alice): maybe default task is a better name?
     tasks = module.TasksStart()
     return tasks
 
-
-def RunTask(module, hosts, command, mod):
+def RunTask(module, hosts, command, mod, id):
+    """
+    Run Task asyncronously
+    :param module:
+    :param hosts:
+    :param command:
+    :param mod:
+    :param id:
+    :return: String
+    """
+    #retriving dynamic inventory from AnsibleInv
     inv = ans_inv.get_inv()
-    tasks = module.RunTask(hosts, command, mod, inv)
-    return tasks
+    #Starting async task and return
+    tasks_result[id] = module.RunTask.delay(hosts, command, mod, inv)
+    return "task started"
+
+def ResultTask(id):
+    """
+
+    :param id:
+    :return: String
+    """
+    # Cheking async task result
+    if tasks_result[id].ready() is False:
+        return "not ready yet!"
+    else:
+        return tasks_result[id].get()

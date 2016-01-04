@@ -22,7 +22,8 @@ from ansible import callbacks
 from ansible import utils
 import AnsibleInv
 import os
-
+# we get the global celery worker from bin folder
+from bin import celery_work
 
 # return list of groups json formatted from ansible inventory
 def GroupsList():
@@ -152,7 +153,7 @@ def GroupVarsList(group):
         except:
             host = {
                 'id': 1,
-                'host': data[i],
+                'group': str(group[i]),
                 'groups': group
             }
         vars.append(host)
@@ -175,50 +176,53 @@ def TasksStart():
         tasks.append(task)
     return tasks
 
-# Run task
+
+@celery_work.task
 def RunTask(hosts, commands, module, inv):
-        #  __init__(self, host_list='/etc/ansible/hosts',
-        #  module_path=None, module_name='command',
-        #  module_args='',
-        #  forks=5,
-        #  timeout=10,
-        #  pattern='*',
-        #  remote_user='root',
-        #  remote_pass=None,
-        #  remote_port=None,
-        #  private_key_file=None,
-        #  background=0,
-        #  basedir=None,
-        #  setup_cache=None,
-        #  vars_cache=None,
-        #  transport='smart',
-        #  conditional='True',
-        #  callbacks=None,
-        #  module_vars=None,
-        #  play_vars=None,
-        #  play_file_vars=None,
-        #  role_vars=None,
-        #  role_params=None,
-        #  default_vars=None,
-        #  extra_vars=None,
-        #  is_playbook=False,
-        #  inventory=None,
-        #  subset=None,
-        #  check=False,
-        #  diff=False,
-        #  environment=None,
-        #  complex_args=None,
-        #  error_on_undefined_vars=True,
-        #  accelerate=False,
-        #  accelerate_ipv6=False,
-        #  accelerate_port=None,
-        #  vault_pass=None,
-        #  run_hosts=None,
-        #  no_log=False,
-        #  run_once=False,
-        #  become=False, become_method='sudo',
-        #  become_user=None, become_pass=None,
-        #  become_exe=None)
+    """
+        __init__(self, host_list='/etc/ansible/hosts',
+        module_path=None, module_name='command',
+        module_args='',
+        forks=5,
+        timeout=10,
+        pattern='*',
+        remote_user='root',
+        remote_pass=None,
+        remote_port=None,
+        private_key_file=None,
+        background=0,
+        basedir=None,
+        setup_cache=None,
+        vars_cache=None,
+        transport='smart',
+        conditional='True',
+        callbacks=None,
+        module_vars=None,
+        play_vars=None,
+        play_file_vars=None,
+        role_vars=None,
+        role_params=None,
+        default_vars=None,
+        extra_vars=None,
+        is_playbook=False,
+        inventory=None,
+        subset=None,
+        check=False,
+        diff=False,
+        environment=None,
+        complex_args=None,
+        error_on_undefined_vars=True,
+        accelerate=False,
+        accelerate_ipv6=False,
+        accelerate_port=None,
+        vault_pass=None,
+        run_hosts=None,
+        no_log=False,
+        run_once=False,
+        become=False, become_method='sudo',
+        become_user=None, become_pass=None,
+        become_exe=None)
+    """
     runner = ansible.runner.Runner(module_name=module, module_args=commands,
                                    pattern=hosts, inventory=inv)
     get_facts = runner.run()
