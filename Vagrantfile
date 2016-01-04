@@ -72,5 +72,7 @@ Vagrant.configure(2) do |config|
     mkdir /etc/ansible/
     echo "localhost" > /etc/ansible/hosts
     echo -e "Host *\n StrictHostKeyChecking no" > /home/vagrant/.ssh/config
+    chmod +x /vagrant/celeryworker.sh
+    C_FORCE_ROOT="true" nohup /vagrant/celeryworker.sh &
   SHELL
 end
