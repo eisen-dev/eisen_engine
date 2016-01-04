@@ -179,7 +179,7 @@ def test_add_vars_1():
     username = 'ansible'
     password = 'default'
 
-    var = dict(variable_key="ansible_ssh_port", variable_value="2222", host="localhost")
+    var = dict(variable_key="ansible_ssh_port", variable_value="22", host="localhost")
     rv = test_app.post('/eisen/api/v1.0/host/2/vars', data=json.dumps(var),
                        content_type='application/json',
                        headers={
@@ -205,7 +205,61 @@ def test_add_vars_2():
     username = 'ansible'
     password = 'default'
 
-    var = dict(variable_key="ansible_port", variable_value="2222", host="127.0.0.1")
+    var = dict(variable_key="ansible_ssh_user", variable_value="vagrant",
+               host="localhost")
+    rv = test_app.post('/eisen/api/v1.0/host/2/vars', data=json.dumps(var),
+                       content_type='application/json',
+                       headers={
+                           'Authorization': 'Basic ' + base64.b64encode(username +
+                                                                        ":" + password)
+                       })
+    check_content_type_json(rv.headers)
+    log.debug(rv.headers)
+    # make sure we get a response
+    eq_(rv.status_code, 201)
+
+def test_add_vars_3():
+    """
+    Testing Post
+    Adding new host to /hosts
+
+    :var
+    Username: ansible
+    Password: default
+    Json data example
+    """
+    log = logging.getLogger('post_new_host')
+    username = 'ansible'
+    password = 'default'
+
+    var = dict(variable_key="ansible_ssh_pass", variable_value="vagrant",
+               host="localhost")
+    rv = test_app.post('/eisen/api/v1.0/host/2/vars', data=json.dumps(var),
+                       content_type='application/json',
+                       headers={
+                           'Authorization': 'Basic ' + base64.b64encode(username +
+                                                                        ":" + password)
+                       })
+    check_content_type_json(rv.headers)
+    log.debug(rv.headers)
+    # make sure we get a response
+    eq_(rv.status_code, 201)
+
+def test_add_vars_4():
+    """
+    Testing Post
+    Adding new host to /hosts
+
+    :var
+    Username: ansible
+    Password: default
+    Json data example
+    """
+    log = logging.getLogger('post_new_host')
+    username = 'ansible'
+    password = 'default'
+
+    var = dict(variable_key="ansible_port", variable_value="22", host="127.0.0.1")
     rv = test_app.post('/eisen/api/v1.0/host/2/vars', data=json.dumps(var),
                        content_type='application/json',
                        headers={
