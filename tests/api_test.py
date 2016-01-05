@@ -390,6 +390,19 @@ def test_task_result():
     username = 'ansible'
     password = 'default'
 
+    """
+    Test execution of default task 1
+    ping
+
+    :var
+    Username: ansible
+    Password: default
+    """
+    log = logging.getLogger('task')
+    username = 'ansible'
+    password = 'default'
+
+    # task is not ready
     rv = test_app.get('/eisen/api/v1.0/task/1/result',
                       headers={'Authorization': 'Basic ' +
                                                 base64.b64encode(username +
@@ -402,10 +415,29 @@ def test_task_result():
     eq_(rv.status_code, 200)
     # make sure there are no users
     eq_(len(resp), 1)
-    #eq_(resp["task"]['contacted']['localhost']["ping"], "pong")
+    eq_(resp["task"], "not ready yet!")
 
-    # check if now the task is ready
-    time.sleep(2)
+    #check untill task is ready
+    i = 10
+    while resp["task"] == "not ready yet!":
+            rv = test_app.get('/eisen/api/v1.0/task/1/result',
+                      headers={'Authorization': 'Basic ' +
+                                                base64.b64encode(username +
+                                                                 ":" + password)
+                               })
+            check_content_type_json(rv.headers)
+            resp = json.loads(rv.data)
+            # make sure we get a response
+            eq_(rv.status_code, 200)
+            # make sure there are no users
+            eq_(len(resp), 1)
+            if i == 0:
+                resp["task"] = "time out during test"
+            i -= 1
+            time.sleep(1)
+
+
+    # task is ready
     rv = test_app.get('/eisen/api/v1.0/task/1/result',
                       headers={'Authorization': 'Basic ' +
                                                 base64.b64encode(username +
@@ -489,6 +521,7 @@ def test_added_task_result():
     username = 'ansible'
     password = 'default'
 
+    # task is not ready
     rv = test_app.get('/eisen/api/v1.0/task/2/result',
                       headers={'Authorization': 'Basic ' +
                                                 base64.b64encode(username +
@@ -501,9 +534,29 @@ def test_added_task_result():
     eq_(rv.status_code, 200)
     # make sure there are no users
     eq_(len(resp), 1)
-    #eq_(resp["task"]['contacted']['localhost']["ping"], "pong")
+    eq_(resp["task"], "not ready yet!")
 
-    time.sleep(2)
+    #check untill task is ready
+    i = 10
+    while resp["task"] == "not ready yet!":
+            rv = test_app.get('/eisen/api/v1.0/task/2/result',
+                      headers={'Authorization': 'Basic ' +
+                                                base64.b64encode(username +
+                                                                 ":" + password)
+                               })
+            check_content_type_json(rv.headers)
+            resp = json.loads(rv.data)
+            # make sure we get a response
+            eq_(rv.status_code, 200)
+            # make sure there are no users
+            eq_(len(resp), 1)
+            if i == 0:
+                resp["task"] = "time out during test"
+            i -= 1
+            time.sleep(1)
+
+
+    # task is ready
     rv = test_app.get('/eisen/api/v1.0/task/2/result',
                       headers={'Authorization': 'Basic ' +
                                                 base64.b64encode(username +
