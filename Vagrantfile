@@ -66,12 +66,21 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
+    echo "updating..."
     sudo apt-get update
+
+    echo "installing needed packages"
     sudo apt-get install -y python-pip python-crypto python-dev rabbitmq-server sshpass
     sudo pip install -r /vagrant/requirements.txt
-    mkdir /etc/ansible/
+
+    echo "adding localhost to /etc/ansible/hosts"
+    mkdir -p /etc/ansible/
     echo "localhost" > /etc/ansible/hosts
+
+    echo "adding StrictHostKeyChecking no to .ssh/config"
     echo -e "Host *\n StrictHostKeyChecking no" > /home/vagrant/.ssh/config
+
+    echo "Starting celeryworker"
     chmod +x /vagrant/celeryworker.sh
     C_FORCE_ROOT="true" nohup /vagrant/celeryworker.sh &
   SHELL
