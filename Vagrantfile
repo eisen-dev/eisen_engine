@@ -84,6 +84,7 @@ Vagrant.configure(2) do |config|
 
     echo "Starting celeryworker"
     chmod +x /vagrant/celeryworker.sh
-    C_FORCE_ROOT="true" nohup /vagrant/celeryworker.sh &
+    # looks like bash is needed ...
+    C_FORCE_ROOT="true" nohup bash /vagrant/celeryworker.sh &
   SHELL
 end

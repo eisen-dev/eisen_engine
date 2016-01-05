@@ -24,6 +24,12 @@ import ansible
 from core import tasks_result
 
 def ModulesList():
+    """
+    Get list of all available module:
+    ansible
+
+    :return: list
+    """
     modules = glob.glob(dirname(__file__) + "/*.py")
 
     # remove itself for not reimporting

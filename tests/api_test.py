@@ -375,21 +375,9 @@ def test_task():
     eq_(rv.status_code, 200)
     # make sure there are no users
     eq_(len(resp), 1)
-    #eq_(resp["task"]['contacted']['localhost']["ping"], "pong")
+    eq_(resp["task"], "task started")
 
 def test_task_result():
-    """
-    Test execution of default task 1
-    ping to localhost
-
-    :var
-    Username: ansible
-    Password: default
-    """
-    log = logging.getLogger('task')
-    username = 'ansible'
-    password = 'default'
-
     """
     Test execution of default task 1
     ping
@@ -451,7 +439,7 @@ def test_task_result():
     eq_(rv.status_code, 200)
     # make sure there are no users
     eq_(len(resp), 1)
-    #eq_(resp["task"]['contacted']['localhost']["ping"], "pong")
+    eq_(resp["task"]['contacted']['localhost']["ping"], "pong")
 
 
 def test_add_new_task():
@@ -506,7 +494,7 @@ def test_added_task():
     eq_(rv.status_code, 200)
     # make sure there are no users
     eq_(len(resp), 1)
-    #eq_(resp["task"]['contacted']['localhost']["ping"], "pong")
+    eq_(resp["task"], "task started")
 
 
 def test_added_task_result():
@@ -571,7 +559,7 @@ def test_added_task_result():
     eq_(rv.status_code, 200)
     # make sure there are no users
     eq_(len(resp), 1)
-    #eq_(resp["task"]['contacted']['localhost']["ping"], "pong")
+    eq_(resp["task"]['contacted']['localhost']["ping"], "pong")
 
 def test_added_hosts():
     """

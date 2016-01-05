@@ -134,9 +134,9 @@ def HostVarsList(id):
         vars.append(var)
     return vars
 
-# return list of host variable json formatted from ansible inventory
 def GroupVarsList(group):
     """
+    lists variables for group
 
     :rtype: object
     """
@@ -159,9 +159,9 @@ def GroupVarsList(group):
         vars.append(host)
     return vars
 
-# make a init task and return as json format
 def TasksStart():
     """
+    example init task
 
     :rtype: object
     """
@@ -188,23 +188,37 @@ def RunTask(hosts, commands, module, inv):
     :param commands:
     :param module:
     :param inv:
-    :return:
+    :return: async task object
     """
     runner = ansible.runner.Runner(module_name=module, module_args=commands,
                                    pattern=hosts, inventory=inv)
     get_facts = runner.run()
     return get_facts
 
-# not used ???
 def TasksList(hosts):
+    """
+    getting list of tasks
+
+    :param hosts:
+    :return:
+    """
     pass
 
-# not used ???
 def RecepieList():
+    """
+    getting list of Recepies
+
+    :return:
+    """
     pass
 
-# run playbook
 def RunRecepie(hosts):
+    """
+    Run playbook
+
+    :param hosts:
+    :return:
+    """
     # Boilerplace callbacks for stdout/stderr and log output
     utils.VERBOSITY = 0
     playbook_cb = callbacks.PlaybookCallbacks(verbose=utils.VERBOSITY)
