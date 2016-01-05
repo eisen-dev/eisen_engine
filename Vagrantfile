@@ -79,6 +79,8 @@ Vagrant.configure(2) do |config|
 
     echo "adding StrictHostKeyChecking no to .ssh/config"
     echo -e "Host *\n StrictHostKeyChecking no" > /home/vagrant/.ssh/config
+    chown vagrant:vagrant /home/vagrant/.ssh/config
+    sudo echo -e "Host *\n StrictHostKeyChecking no" > /root/.ssh/config
 
     echo "Starting celeryworker"
     chmod +x /vagrant/celeryworker.sh

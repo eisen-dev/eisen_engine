@@ -433,6 +433,7 @@ def test_task_result():
             eq_(len(resp), 1)
             if i == 0:
                 resp["task"] = "time out during test"
+                log.debug(resp)
             i -= 1
             time.sleep(1)
 
@@ -552,6 +553,7 @@ def test_added_task_result():
             eq_(len(resp), 1)
             if i == 0:
                 resp["task"] = "time out during test"
+                log.debug(resp)
             i -= 1
             time.sleep(1)
 
