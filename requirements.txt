@@ -2,5 +2,6 @@ celery
 Flask
 Flask-HTTPAuth
 Flask-RESTful
-ansible
+Flask-SQLAlchemy
+ansible==1.9.4
 nose
