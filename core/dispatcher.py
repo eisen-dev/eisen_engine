@@ -63,6 +63,19 @@ def AgentInfo(module=None):
     agents.append(agent)
     return agents
 
+def PackageUpdate(module=None):
+    """
+
+    :rtype: object
+    """
+    packs = []
+    pack = {
+        'id': 1,
+        'command': 'Started',
+    }
+    packs.append(pack)
+    return packs
+
 def use_module():
     # API chooser
     module = AnsibleWrap

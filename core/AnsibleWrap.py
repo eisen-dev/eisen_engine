@@ -75,9 +75,11 @@ def HostsList():
     """
     hosts = []
     a = inventory.Inventory()
+    a= AnsibleInv.get_inv()
+    data = a.list_hosts()
     # data example
     # ['192.168.233.129', '192.168.233.131', '192.168.0.211']
-    data = a.list_hosts()
+    #data = a.list_hosts()
     # groups example
     # {'ungrouped': [],
     #  'all': ['192.168.233.129', '192.168.233.131', '192.168.0.211'],

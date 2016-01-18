@@ -21,18 +21,24 @@
 from flask import Flask, jsonify, abort, make_response
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth
+from flask.ext.sqlalchemy import SQLAlchemy
 from resources import GroupsList
 from resources import HostsList
 from resources import Tasks
 from resources import AgentInfo
+from resources import package_retrive
 from bin import celery_work
 
 app = Flask(__name__, static_url_path="")
-celery_work.conf.update(app.config)
 
+# configuration
+celery_work.conf.update(app.config)
+app.config['SQLALCHEMY_DATABASE_URI']="mysql://username:password@server/db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 api = Api(app)
 auth = HTTPBasicAuth()
+db = SQLAlchemy(app)
 
 @auth.get_password
 def get_password(username):
@@ -46,7 +52,15 @@ def unauthorized():
     # auth dialog
     return make_response(jsonify({'message': 'Unauthorized access'}), 403)
 
+api.add_resource(AgentInfo.AgentAPI, '/eisen/api/', endpoint='root')
+
+
 api.add_resource(AgentInfo.AgentAPI, '/eisen/api/v1.0/agent', endpoint='agent')
+
+api.add_resource(package_retrive.PackageAPI, '/eisen/api/v1.0/package_retrieve',
+                 endpoint='package_retrive')
+api.add_resource(package_retrive.OsCheckAPI, '/eisen/api/v1.0/os_check',
+                 endpoint='os_check')
 
 api.add_resource(GroupsList.GroupsAPI, '/eisen/api/v1.0/groups', endpoint='groups')
 api.add_resource(GroupsList.GroupAPI, '/eisen/api/v1.0/group/<int:id>', endpoint='group')

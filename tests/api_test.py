@@ -613,3 +613,56 @@ def test_added_host_vars():
     #eq_(rv.status_code, 200)
     # make sure there are no users
     #eq_(len(resp), 1)
+
+def test_packages():
+    """
+    Check for variable associated to added host
+
+    :var
+    Username: ansible
+    Password: default
+    """
+    log = logging.getLogger('added_host_vars')
+    username = 'ansible'
+    password = 'default'
+
+    rv = test_app.get('/eisen/api/v1.0/package_retrive',
+                      headers={'Authorization': 'Basic ' +
+                                                base64.b64encode(username +
+                                                                 ":" + password)
+                               })
+    check_content_type_json(rv.headers)
+    resp = json.loads(rv.data)
+    # log.debug(rv.data)
+    log2.debug(rv.data)
+    er
+    # make sure we get a response
+    #eq_(rv.status_code, 200)
+    # make sure there are no users
+    #eq_(len(resp), 1)
+
+def test_check_os():
+    """
+    Check for variable associated to added host
+
+    :var
+    Username: ansible
+    Password: default
+    """
+    log = logging.getLogger('added_host_vars')
+    username = 'ansible'
+    password = 'default'
+
+    rv = test_app.get('/eisen/api/v1.0/os_check',
+                      headers={'Authorization': 'Basic ' +
+                                                base64.b64encode(username +
+                                                                 ":" + password)
+                               })
+    check_content_type_json(rv.headers)
+    resp = json.loads(rv.data)
+    # log.debug(rv.data)
+    log2.debug(rv.data)
+    # make sure we get a response
+    #eq_(rv.status_code, 200)
+    # make sure there are no users
+    #eq_(len(resp), 1)
