@@ -27,7 +27,7 @@ Vagrant.configure(2) do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -70,7 +70,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get update
 
     echo "installing needed packages"
-    sudo apt-get install -y python-pip python-crypto python-dev rabbitmq-server sshpass
+    sudo apt-get install -y python-pip python-crypto python-dev rabbitmq-server sshpass python-mysqldb
     sudo pip install -r /vagrant/requirements.txt
 
     echo "adding localhost to /etc/ansible/hosts"
@@ -80,6 +80,7 @@ Vagrant.configure(2) do |config|
     echo "adding StrictHostKeyChecking no to .ssh/config"
     echo -e "Host *\n StrictHostKeyChecking no" > /home/vagrant/.ssh/config
     chown vagrant:vagrant /home/vagrant/.ssh/config
+    sudo touch /root/.ssh/config
     sudo echo -e "Host *\n StrictHostKeyChecking no" > /root/.ssh/config
 
     echo "Starting celeryworker"
