@@ -53,7 +53,7 @@ def repository_installed(os):
     if os == 'Ubuntu':
         command = "dpkg -l | awk 'NR>5{print $0}'"
     elif os == 'Gentoo':
-        command = "equery --no-pipe --quiet list '*'"
+        command = "equery --no-pipe --quiet list '*' -F '$category $name $fullversion'"
     else:
         command = None
     return command
@@ -62,7 +62,8 @@ def repository_all(os):
     if os == 'Ubuntu':
         command = "dpkg -l \"*\" | grep -v '^ii'| awk 'NR>5{print $0}'"
     elif os == 'Gentoo':
-        command = "equery --no-pipe --quiet list -po '*'"
+        command = "equery --no-pipe --quiet list -po '*' -F '$category $name " \
+                  "$fullversion'"
     else:
         command = None
     return command
@@ -92,7 +93,17 @@ def get_installed_package(target_host_ip, command, target_host_os):
             summary = s.join(summary)
             update_installed_package_db(stripe[1],stripe[2],summary,target_host_ip,target_host_os)
     elif target_host_os == 'Gentoo':
-        print packages
+        package_list = packages.split('\n')
+        for package in package_list:
+            category_name_version = package.split(' ')
+            package_category = category_name_version[0]
+            package_name = category_name_version[1]
+            packge_version = category_name_version[2]
+            summary = 'none'
+            update_repository_package_db(package_category+'/'+package_name,packge_version,
+                                         summary,
+                                         target_host_ip,
+                                         target_host_os)
     else:
         print 'failed'
 
@@ -122,7 +133,18 @@ def get_all_package(target_host_ip, command, target_host_os):
             update_repository_package_db(stripe[1],stripe[2],summary,target_host_ip,
                                  target_host_os)
     elif target_host_os == 'Gentoo':
-        print packages
+        package_list = packages.split('\n')
+        for package in package_list:
+            category_name_version = package.split(' ')
+            package_category = category_name_version[0]
+            package_name = category_name_version[1]
+            packge_version = category_name_version[2]
+            summary = 'none'
+            update_repository_package_db(package_category+'/'+package_name,packge_version,
+                                         summary,
+                                         target_host_ip,
+                                         target_host_os)
+
     else:
         print 'failed'
 
