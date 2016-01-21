@@ -158,21 +158,23 @@ def get_os():
     for i in host:
         version = RunTask(host,"bash -c 'cat /etc/*{release,version}'","shell",a)
         print version
-        try:
-            stdout = version['contacted'][i]['stdout']
-            print stdout
-            check_os(stdout,i)
-        except:
-            print "failed"
+        print str(i) +':'+ str(host)
+        print "failed"
+        stdout = version['contacted'][str(i)]['stdout']
+        print stdout
+        check_os(stdout,i)
+
 
 def check_os(stdout,i):
-    try:
-        if stdout.find('Ubuntu') is not -1:
-            submit_os_db('Ubuntu',i)
-        elif stdout.find('Gentoo' is not -1):
-            submit_os_db('Gentoo', i)
-    except:
-        print 'os not found, please report issue to github.'
+    if (stdout.find('Ubuntu') is not -1):
+        submit_os_db('Ubuntu',i)
+        print('Ubuntu',i)
+    elif (stdout.find('Gentoo') is not -1):
+        submit_os_db('Gentoo', i)
+        print('Gentoo',i)
+    else:
+        submit_os_db('Unknown', i)
+        print('Unknown',i)
 
 def submit_os_db(os, host):
     target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
