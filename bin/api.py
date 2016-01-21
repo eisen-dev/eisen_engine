@@ -18,6 +18,8 @@
 
 """Eisen API using Flask-RESTful extension."""
 
+import sys
+sys.path.append('/var/www/bayes_server/')
 from flask import Flask, jsonify, abort, make_response
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth
@@ -61,6 +63,8 @@ api.add_resource(package_retrive.PackageAPI, '/eisen/api/v1.0/package_retrieve',
                  endpoint='package_retrive')
 api.add_resource(package_retrive.OsCheckAPI, '/eisen/api/v1.0/os_check',
                  endpoint='os_check')
+api.add_resource(package_retrive.PackageActionAPI, '/eisen/api/v1.0/package_action',
+                 endpoint='package_action')
 
 api.add_resource(GroupsList.GroupsAPI, '/eisen/api/v1.0/groups', endpoint='groups')
 api.add_resource(GroupsList.GroupAPI, '/eisen/api/v1.0/group/<int:id>', endpoint='group')
