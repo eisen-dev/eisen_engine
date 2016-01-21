@@ -14,9 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
-from sqlalchemy import create_engine
-from sqlalchemy import MetaData, Column, Table, ForeignKey
-from sqlalchemy import Integer, String, bindparam, select
+from sqlalchemy import *
 from AnsibleWrap import RunTask
 import AnsibleInv
 import traceback
@@ -92,7 +90,10 @@ def get_installed_package(target_host_ip, command, target_host_os):
                     i+=1
             s = ' '
             summary = s.join(summary)
-            update_installed_package_db(stripe[1],stripe[2],summary,target_host_ip,target_host_os)
+            try:
+                update_installed_package_db(stripe[1],stripe[2],summary,target_host_ip,target_host_os)
+            except Exception, error:
+                print error
     elif target_host_os == 'Gentoo':
         package_line = packages['contacted'][target_host_ip]['stdout']
         package_list = package_line.split('\n')
@@ -102,10 +103,13 @@ def get_installed_package(target_host_ip, command, target_host_os):
             package_name = category_name_version[1]
             packge_version = category_name_version[2]
             summary = 'none'
-            update_repository_package_db(package_category+'/'+package_name,packge_version,
+            try:
+                update_installed_package_db(package_category+'/'+package_name,packge_version,
                                          summary,
                                          target_host_ip,
                                          target_host_os)
+            except Exception, error:
+                print error
     else:
         print 'failed'
 
@@ -132,8 +136,11 @@ def get_all_package(target_host_ip, command, target_host_os):
                     i+=1
             s = ' '
             summary = s.join(summary)
-            update_repository_package_db(stripe[1],stripe[2],summary,target_host_ip,
+            try:
+                update_repository_package_db(stripe[1],stripe[2],summary,target_host_ip,
                                  target_host_os)
+            except Exception, error:
+                print error
     elif target_host_os == 'Gentoo':
         package_line = packages['contacted'][target_host_ip]['stdout']
         package_list = package_line.split('\n')
@@ -143,39 +150,63 @@ def get_all_package(target_host_ip, command, target_host_os):
             package_name = category_name_version[1]
             packge_version = category_name_version[2]
             summary = 'none'
-            update_repository_package_db(package_category+'/'+package_name,packge_version,
+            try:
+                update_repository_package_db(package_category+'/'+package_name,
+                                              packge_version,
                                          summary,
                                          target_host_ip,
                                          target_host_os)
+            except Exception, error:
+                print error
 
     else:
         print 'failed'
 
 def update_installed_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
-    installed_package = Table('installed_package', metadata, autoload=True,
-                        autoload_with=engine)
-    stmt = installed_package.insert()
-    result = engine.execute(stmt, installed_pack_name=package_name,
-    installed_pack_version=package_version,
-                            installed_pack_summary=package_summary,
-                            target_host=target_host_ip, pack_sys_id=1)
-    pass
+    connection = engine.connect()
+    trans = connection.begin()
+    try:
+        installed_package = Table('installed_package', metadata, autoload=True,
+                            autoload_with=engine)
+        stmt = installed_package.insert()
+        result = connection.execute(
+            stmt,
+            installed_pack_name=package_name,
+            installed_pack_version=package_version,
+            installed_pack_summary=package_summary,
+            target_host=target_host_ip,
+            pack_sys_id=1,
+            prefixes=['IGNORE']
+        ).execution_options(autocommit=True)
+        trans.commit()
+        connection.close()
+    except Exception, error:
+        trans.rollback()
+        print (error)
 
 def update_repository_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
-    repository_package = Table('pack_info', metadata, autoload=True,
-                        autoload_with=engine)
-    stmt = repository_package.insert()
-    result = engine.execute(
-        stmt,
-        pack_name=package_name,
-        pack_version=package_version,
-        pack_summary=package_summary,
-        target_host=target_host_ip,
-        pack_sys_id=1
-    )
-    pass
+    connection = engine.connect()
+    trans = connection.begin()
+    try:
+        repository_package = Table('pack_info', metadata, autoload=True,
+                            autoload_with=engine)
+        stmt = repository_package.insert()
+        result = connection.execute(
+            stmt,
+            pack_name=package_name,
+            pack_version=package_version,
+            pack_summary=package_summary,
+            target_host=target_host_ip,
+            pack_sys_id=1,
+            prefixes=['IGNORE']
+        ).execution_options(autocommit=True)
+        trans.commit()
+        connection.close()
+    except Exception, error:
+        trans.rollback()
+        print (error)
 
 def get_os():
     a= AnsibleInv.get_inv()
