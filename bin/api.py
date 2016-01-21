@@ -18,8 +18,8 @@
 
 """Eisen API using Flask-RESTful extension."""
 
-import sys
-sys.path.append('/var/www/bayes_server/')
+import sys, os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..' )
 from flask import Flask, jsonify, abort, make_response
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth

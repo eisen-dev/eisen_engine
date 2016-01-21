@@ -38,11 +38,16 @@ def package_update(command):
             if row['ipaddress'] == i:
                 os = row['os']
                 print os
-                command = repository_installed(os)
+                command_installed = repository_installed(os)
+                command_all = repository_all(os)
                 try:
-                    get_package(host,command,os)
+                    get_installed_package(host, command_installed, os)
                 except:
-                    pass
+                    print('get installed package')
+                try:
+                    get_all_package(host, command_all, os)
+                except:
+                    print('get repository package')
 
 def repository_installed(os):
     if os == 'Ubuntu':
@@ -55,14 +60,14 @@ def repository_installed(os):
 
 def repository_all(os):
     if os == 'Ubuntu':
-        command = "dpkg -l | awk 'NR>5{print $2\"=\"$3\"=\"$4}'"
+        command = "dpkg -l \"*\" | grep -v '^ii'| awk 'NR>5{print $0}'"
     elif os == 'Gentoo':
-        command = "equery --no-pipe --quiet list '*'"
+        command = "equery --no-pipe --quiet list -po '*'"
     else:
         command = None
     return command
 
-def get_package(target_host_ip, command, target_host_os):
+def get_installed_package(target_host_ip, command, target_host_os):
     a= AnsibleInv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     target_host_ip = target_host_ip[0]
@@ -91,6 +96,36 @@ def get_package(target_host_ip, command, target_host_os):
     else:
         print 'failed'
 
+def get_all_package(target_host_ip, command, target_host_os):
+    a= AnsibleInv.get_inv()
+    packages = RunTask(target_host_ip, command,"shell",a)
+    target_host_ip = target_host_ip[0]
+    if target_host_os == 'Ubuntu':
+        dpkg_lines = packages['contacted'][target_host_ip]['stdout']
+        dpkg_lines = dpkg_lines.split('\n')
+        # dividing dpkg output and dividing the package summary from the other
+        # information
+        for dpkg_line in dpkg_lines:
+            dpkg_line = dpkg_line.split(' ')
+            stripe = []
+            summary = []
+            i = 0
+            for point in dpkg_line:
+                if point != '' and i<3:
+                    stripe.append(point)
+                    i+=1
+                elif point !='' and i>=3:
+                    summary.append(point)
+                    i+=1
+            s = ' '
+            summary = s.join(summary)
+            update_repository_package_db(stripe[1],stripe[2],summary,target_host_ip,
+                                 target_host_os)
+    elif target_host_os == 'Gentoo':
+        print packages
+    else:
+        print 'failed'
+
 def update_installed_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
     installed_package = Table('installed_package', metadata, autoload=True,
@@ -100,6 +135,21 @@ def update_installed_package_db(package_name,package_version,package_summary,
     installed_pack_version=package_version,
                             installed_pack_summary=package_summary,
                             target_host=target_host_ip, pack_sys_id=1)
+    pass
+
+def update_repository_package_db(package_name,package_version,package_summary,
+                                target_host_ip, target_host_os):
+    repository_package = Table('pack_info', metadata, autoload=True,
+                        autoload_with=engine)
+    stmt = repository_package.insert()
+    result = engine.execute(
+        stmt,
+        pack_name=package_name,
+        pack_version=package_version,
+        pack_summary=package_summary,
+        target_host=target_host_ip,
+        pack_sys_id=1
+    )
     pass
 
 def get_os():
@@ -119,7 +169,7 @@ def check_os(stdout,i):
         if stdout.find('Ubuntu'):
             submit_os_db('Ubuntu',i)
         elif stdout.find('Gentoo'):
-            submit_os_db('Gentoo')
+            submit_os_db('Gentoo', i)
     except:
         pass
     pass
