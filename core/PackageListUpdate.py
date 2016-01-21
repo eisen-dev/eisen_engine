@@ -160,21 +160,21 @@ def get_os():
         print version
         try:
             stdout = version['contacted'][i]['stdout']
+            print stdout
             check_os(stdout,i)
         except:
             print "failed"
 
 def check_os(stdout,i):
     try:
-        if stdout.find('Ubuntu'):
+        if stdout.find('Ubuntu') is not -1:
             submit_os_db('Ubuntu',i)
-        elif stdout.find('Gentoo'):
+        elif stdout.find('Gentoo' is not -1):
             submit_os_db('Gentoo', i)
     except:
-        pass
-    pass
+        print 'os not found, please report issue to github.'
 
-def submit_os_db(os,host):
+def submit_os_db(os, host):
     target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
     stmt = (target_host.update().
         where(target_host.c.ipaddress == bindparam('host')).
