@@ -19,6 +19,7 @@ from sqlalchemy import MetaData, Column, Table, ForeignKey
 from sqlalchemy import Integer, String, bindparam, select
 from AnsibleWrap import RunTask
 import AnsibleInv
+import traceback
 
 engine = create_engine('mysql://root:password@192.168.33.15:3306/eisen',
                        echo=True)
@@ -42,12 +43,12 @@ def package_update(command):
                 command_all = repository_all(os)
                 try:
                     get_installed_package(host, command_installed, os)
-                except:
-                    print('get installed package')
+                except Exception as e:
+                    print(traceback.format_exc())
                 try:
                     get_all_package(host, command_all, os)
-                except:
-                    print('get repository package')
+                except Exception as e:
+                    print(traceback.format_exc())
 
 def repository_installed(os):
     if os == 'Ubuntu':
@@ -93,7 +94,8 @@ def get_installed_package(target_host_ip, command, target_host_os):
             summary = s.join(summary)
             update_installed_package_db(stripe[1],stripe[2],summary,target_host_ip,target_host_os)
     elif target_host_os == 'Gentoo':
-        package_list = packages.split('\n')
+        package_line = packages['contacted'][target_host_ip]['stdout']
+        package_list = package_line.split('\n')
         for package in package_list:
             category_name_version = package.split(' ')
             package_category = category_name_version[0]
@@ -133,7 +135,8 @@ def get_all_package(target_host_ip, command, target_host_os):
             update_repository_package_db(stripe[1],stripe[2],summary,target_host_ip,
                                  target_host_os)
     elif target_host_os == 'Gentoo':
-        package_list = packages.split('\n')
+        package_line = packages['contacted'][target_host_ip]['stdout']
+        package_list = package_line.split('\n')
         for package in package_list:
             category_name_version = package.split(' ')
             package_category = category_name_version[0]
