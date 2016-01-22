@@ -74,8 +74,10 @@ Vagrant.configure(2) do |config|
     sudo pip install -r /vagrant/requirements.txt
 
     echo "adding localhost to /etc/ansible/hosts"
-    mkdir -p /etc/ansible/
-    echo "localhost" > /etc/ansible/hosts
+    mkdir -p /etc/ansible/group_vars/
+    echo -e "[vagrant]\nlocalhost" > /etc/ansible/hosts
+    echo -e "ansible_user_ssh: vagrant\nansible_pass_ssh: vagrant" > /etc/ansible/group_vars/vagrant
+
 
     echo "adding StrictHostKeyChecking no to .ssh/config"
     echo -e "Host *\n StrictHostKeyChecking no" > /home/vagrant/.ssh/config
