@@ -165,47 +165,41 @@ def get_all_package(target_host_ip, command, target_host_os):
 def update_installed_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
     connection = engine.connect()
-    trans = connection.begin()
     try:
         installed_package = Table('installed_package', metadata, autoload=True,
                             autoload_with=engine)
         stmt = installed_package.insert()
-        result = connection.execute(
+        connection.execute(
             stmt,
             installed_pack_name=package_name,
             installed_pack_version=package_version,
             installed_pack_summary=package_summary,
             target_host=target_host_ip,
-            pack_sys_id=1,
-            prefixes=['IGNORE']
+            pack_sys_id=1
         ).execution_options(autocommit=True)
-        trans.commit()
         connection.close()
     except Exception, error:
-        trans.rollback()
+        connection.close()
         print (error)
 
 def update_repository_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
     connection = engine.connect()
-    trans = connection.begin()
     try:
         repository_package = Table('pack_info', metadata, autoload=True,
                             autoload_with=engine)
         stmt = repository_package.insert()
-        result = connection.execute(
+        connection.execute(
             stmt,
             pack_name=package_name,
             pack_version=package_version,
             pack_summary=package_summary,
             target_host=target_host_ip,
-            pack_sys_id=1,
-            prefixes=['IGNORE']
+            pack_sys_id=1
         ).execution_options(autocommit=True)
-        trans.commit()
         connection.close()
     except Exception, error:
-        trans.rollback()
+        connection.close()
         print (error)
 
 def get_os():
