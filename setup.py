@@ -26,7 +26,7 @@ setup(
     author='Alice Ferrazzi',
     author_email='alice.ferrazzi@gmail.com',
     description='eisen agent',
-    requires=['Flask'],
+    requires=['Flask', 'sqlalchemy'],
     test_require=['nose'],
     test_suite='nose.collector'
 )

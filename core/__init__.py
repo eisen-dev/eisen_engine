@@ -25,6 +25,9 @@ __author__ = 'Eisen'
 
 # Contain the async executed tasks result
 tasks_result = {}
+tasks_package = {}
+
+result2Db = {}
 
 # contain the dynamic inventory
 dynamic_inventory = inventory.Inventory()

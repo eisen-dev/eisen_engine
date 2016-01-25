@@ -20,9 +20,19 @@ from os.path import dirname, basename
 import AnsibleWrap
 import core.AnsibleInv as ans_inv
 import ansible
+import time
+from sqlalchemy import *
+from mysql_config import start_engine, sendTaskToDb, task_result, package_result
+from bin import celery_work
+from bin import db
+
 # using global tasks_result dictionary for keeping the async result
 from core import tasks_result
+from core import tasks_package
+from core import result2Db
 
+engine , metadata = start_engine()
+connection = engine.connect()
 def ModulesList():
     """
     Get list of all available module:
@@ -122,6 +132,7 @@ def RunTask(module, hosts, command, mod, id):
     inv = ans_inv.get_inv()
     #Starting async task and return
     tasks_result[id] = module.RunTask.delay(hosts, command, mod, inv)
+    result2Db[id] = ResultToDB(tasks_result[id], hosts, id)
     return "task started"
 
 def ResultTask(id):
@@ -131,7 +142,44 @@ def ResultTask(id):
     :return: String
     """
     # Cheking async task result
-    if tasks_result[id].ready() is False:
+    try:
+        if tasks_result[id].ready() is False:
+            return "not ready yet!"
+        else:
+            return tasks_result[id].get()
+    except (Exception):
         return "not ready yet!"
-    else:
-        return tasks_result[id].get()
+
+def ResultToDB(task, target_host, id):
+    #sendTaskToDb(engine, metadata, connection, task, target_host)
+    while task.ready() is False:
+        time.sleep(1)
+    tasks_result = str(task.get())
+    db.session.add(task_result(id, tasks_result, target_host))
+    db.session.commit()
+    return 'done'
+
+def PackageAction(module, hosts, command, mod, id, pack):
+    """
+    Run Task asyncronously
+    :param module:
+    :param hosts:
+    :param command:
+    :param mod:
+    :param id:
+    :return: String
+    """
+    #retriving dynamic inventory from AnsibleInv
+    inv = ans_inv.get_inv()
+    #Starting async task and return
+    tasks_package[id] = module.RunTask.delay(hosts, command, mod, inv)
+    while tasks_package[id].ready() is False:
+        time.sleep(1)
+    result_string = tasks_package[id].get()
+    print result_string
+    db.session.add(package_result(str(result_string), pack['packageName'],
+                                  pack['packageVersion'], pack['targetOS'],
+                                  pack['targetHost'], str(id),
+                   pack['packageAction'], str(result_string)))
+    db.session.commit()
+    return "task started"

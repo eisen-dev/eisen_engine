@@ -90,32 +90,3 @@ class OsCheckAPI(Resource):
         }
         packs.append(host)
         return {'agent': marshal(host, pack_fields)}, 201
-
-class PackageActionAPI(Resource):
-    decorators = [auth.login_required]
-
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('module', type=str, required=True,
-                                   help='No task title provided',
-                                   location='json')
-        self.reqparse.add_argument('version', type=str, required=True,
-                                   help='No task title provided',
-                                   location='json')
-        super(PackageActionAPI, self).__init__()
-
-    def get(self):
-        PackageListUpdate.get_os()
-        return {'agent': [marshal(host, pack_fields) for host in packs]}
-
-    def post(self):
-        args = self.reqparse.parse_args()
-        host = {
-            'id': packs[-1]['id'] + 1,
-            'target_host': args['target_host'],
-            'package_name': args['package_name'],
-            'package_version': args['package_version'],
-            'action': args['version'],
-        }
-        packs.append(host)
-        return {'agent': marshal(host, pack_fields)}, 201

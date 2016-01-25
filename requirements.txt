@@ -5,3 +5,4 @@ Flask-RESTful
 Flask-SQLAlchemy
 ansible==1.9.4
 nose
+sqlalchemy

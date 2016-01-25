@@ -18,11 +18,9 @@ from sqlalchemy import *
 from AnsibleWrap import RunTask
 import AnsibleInv
 import traceback
+from mysql_config import start_engine
 
-engine = create_engine('mysql://root:password@192.168.33.15:3306/eisen',
-                       echo=True)
-
-metadata = MetaData(bind=engine)
+engine , metadata = start_engine()
 
 def package_update(command):
     a= AnsibleInv.get_inv()
@@ -208,11 +206,15 @@ def get_os():
     for i in host:
         version = RunTask(host,"bash -c 'cat /etc/*{release,version}'","shell",a)
         print version
-        print str(i) +':'+ str(host)
-        print "failed"
-        stdout = version['contacted'][str(i)]['stdout']
-        print stdout
-        check_os(stdout,i)
+        print ('connecting to: ' + str(i) +':'+ str(host))
+        try:
+            stdout = version['contacted'][str(i)]['stdout']
+            print stdout
+            check_os(stdout,i)
+        except Exception, error:
+            print ("couldn't connect to"+ i )
+
+
 
 
 def check_os(stdout,i):
