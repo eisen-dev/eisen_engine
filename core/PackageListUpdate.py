@@ -22,29 +22,32 @@ from mysql_config import start_engine
 
 engine , metadata = start_engine()
 
-def package_update(command):
-    a= AnsibleInv.get_inv()
-    host = a.list_hosts()
-    print host
-    target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
-    s = select([target_host])
-    result = engine.execute(s)
-    print result
-    for i in host:
-        for row in result:
-            if row['ipaddress'] == i:
-                os = row['os']
-                print os
-                command_installed = repository_installed(os)
-                command_all = repository_all(os)
-                try:
-                    get_installed_package(host, command_installed, os)
-                except Exception as e:
-                    print(traceback.format_exc())
-                try:
-                    get_all_package(host, command_all, os)
-                except Exception as e:
-                    print(traceback.format_exc())
+def package_update(targetHost, os, command):
+    print (
+        '\n------------------------------------' + targetHost
+        + '--' + os + '--' +command+ '--------------------------------\n')
+    command_installed = repository_installed(os)
+    command_all = repository_all(os)
+    if command == 'installed':
+        try:
+            print 'get installed package'
+            get_installed_package(targetHost, command_installed, os)
+        except Exception as e:
+            print(traceback.format_exc())
+    if command == 'respository':
+        try:
+            get_all_package(targetHost, command_all, os)
+        except Exception as e:
+            print(traceback.format_exc())
+    if command == 'all':
+        try:
+            get_installed_package(targetHost, command_installed, os)
+        except Exception as e:
+            print(traceback.format_exc())
+        try:
+            get_all_package(targetHost, command_all, os)
+        except Exception as e:
+            print(traceback.format_exc())
 
 def repository_installed(os):
     if os == 'Ubuntu':
@@ -52,6 +55,7 @@ def repository_installed(os):
     elif os == 'Gentoo':
         command = "equery --no-pipe --quiet list '*' -F '$category $name $fullversion'"
     else:
+        print 'not supported yet'
         command = None
     return command
 
@@ -62,13 +66,13 @@ def repository_all(os):
         command = "equery --no-pipe --quiet list -po '*' -F '$category $name " \
                   "$fullversion'"
     else:
+        print 'not supported yet'
         command = None
     return command
 
 def get_installed_package(target_host_ip, command, target_host_os):
     a= AnsibleInv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
-    target_host_ip = target_host_ip[0]
     if target_host_os == 'Ubuntu':
         dpkg_lines = packages['contacted'][target_host_ip]['stdout']
         dpkg_lines = dpkg_lines.split('\n')
@@ -95,6 +99,7 @@ def get_installed_package(target_host_ip, command, target_host_os):
     elif target_host_os == 'Gentoo':
         package_line = packages['contacted'][target_host_ip]['stdout']
         package_list = package_line.split('\n')
+        print package_list
         for package in package_list:
             category_name_version = package.split(' ')
             package_category = category_name_version[0]
@@ -114,7 +119,6 @@ def get_installed_package(target_host_ip, command, target_host_os):
 def get_all_package(target_host_ip, command, target_host_os):
     a= AnsibleInv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
-    target_host_ip = target_host_ip[0]
     if target_host_os == 'Ubuntu':
         dpkg_lines = packages['contacted'][target_host_ip]['stdout']
         dpkg_lines = dpkg_lines.split('\n')
