@@ -177,7 +177,6 @@ class HostVarsAPI(Resource):
             'variable_key': args['variable_value'],
 
         }
-        hosts.append(host)
         inv = ans_inv.get_inv()
         print (inv.groups_list())
         return {'host': marshal(host, var_fields)}, 201

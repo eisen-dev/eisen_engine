@@ -30,8 +30,8 @@ def get_password(username):
     return None
 
 pack_fields = {
-    'module': fields.String,
-    'version': fields.String,
+    'target_host': fields.String,
+    'command': fields.String,
     'uri': fields.Url('host')
 }
 
@@ -42,27 +42,31 @@ class PackageAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('module', type=str, required=True,
+        self.reqparse.add_argument('target_host', type=str, required=True,
                                    help='No task title provided',
                                    location='json')
-        self.reqparse.add_argument('version', type=str, required=True,
+        self.reqparse.add_argument('target_os', type=str, required=True,
+                                   help='No task title provided',
+                                   location='json')
+        self.reqparse.add_argument('command', type=str, required=True,
                                    help='No task title provided',
                                    location='json')
         super(PackageAPI, self).__init__()
 
     def get(self):
-        PackageListUpdate.package_update('ls')
         return {'agent': [marshal(host, pack_fields) for host in packs]}
 
     def post(self):
         args = self.reqparse.parse_args()
-        host = {
+        pack = {
             'id': packs[-1]['id'] + 1,
-            'module': args['module'],
-            'version': args['version'],
+            'target_host': args['target_host'],
+            'target_os': args['target_os'],
+            'command': args['command'],
         }
-        packs.append(host)
-        return {'agent': marshal(host, pack_fields)}, 201
+        PackageListUpdate.package_update(pack['target_host'], pack['target_os'],
+                                         pack['command'])
+        return {'agent': marshal(pack, pack_fields)}, 201
 
 class OsCheckAPI(Resource):
     decorators = [auth.login_required]
