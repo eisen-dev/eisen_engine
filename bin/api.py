@@ -32,55 +32,58 @@ from resources import packageAction
 from bin import celery_work
 from bin import db
 
-app = Flask(__name__, static_url_path="")
+def create_app():
+    app = Flask(__name__, static_url_path="")
 
-# configuration
-app.config['SQLALCHEMY_DATABASE_URI']="mysql://root:password@192.168.33.15:3306/eisen"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
-celery_work.conf.update(app.config)
+    # configuration
+    app.config['SQLALCHEMY_DATABASE_URI']="mysql://root:password@192.168.33.15:3306/eisen"
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
+    celery_work.conf.update(app.config)
 
-api = Api(app)
-auth = HTTPBasicAuth()
-db.init_app(app)
+    api = Api(app)
+    auth = HTTPBasicAuth()
+    db.init_app(app)
 
-@auth.get_password
-def get_password(username):
-    if username == 'ansible':
-        return 'default'
-    return None
+    @auth.get_password
+    def get_password(username):
+        if username == 'ansible':
+            return 'default'
+        return None
 
-@auth.error_handler
-def unauthorized():
-    # return 403 instead of 401 to prevent browsers from displaying the default
-    # auth dialog
-    return make_response(jsonify({'message': 'Unauthorized access'}), 403)
+    @auth.error_handler
+    def unauthorized():
+        # return 403 instead of 401 to prevent browsers from displaying the default
+        # auth dialog
+        return make_response(jsonify({'message': 'Unauthorized access'}), 403)
 
-api.add_resource(AgentInfo.AgentAPI, '/eisen/api/', endpoint='root')
+    api.add_resource(AgentInfo.AgentAPI, '/eisen/api/', endpoint='root')
 
 
-api.add_resource(AgentInfo.AgentAPI, '/eisen/api/v1.0/agent', endpoint='agent')
+    api.add_resource(AgentInfo.AgentAPI, '/eisen/api/v1.0/agent', endpoint='agent')
 
-api.add_resource(package_retrive.PackageAPI, '/eisen/api/v1.0/package_retrieve',
-                 endpoint='package_retrive')
-api.add_resource(package_retrive.OsCheckAPI, '/eisen/api/v1.0/os_check',
-                 endpoint='os_check')
-api.add_resource(packageAction.PackageActionAPI, '/eisen/api/v1.0/packages',
-                 endpoint='packages')
+    api.add_resource(package_retrive.PackageAPI, '/eisen/api/v1.0/package_retrieve',
+                     endpoint='package_retrive')
+    api.add_resource(package_retrive.OsCheckAPI, '/eisen/api/v1.0/os_check',
+                     endpoint='os_check')
+    api.add_resource(packageAction.PackageActionAPI, '/eisen/api/v1.0/packages',
+                     endpoint='packages')
 
-api.add_resource(GroupsList.GroupsAPI, '/eisen/api/v1.0/groups', endpoint='groups')
-api.add_resource(GroupsList.GroupAPI, '/eisen/api/v1.0/group/<int:id>', endpoint='group')
-api.add_resource(GroupsList.GroupVarsAPI, '/eisen/api/v1.0/group/<int:id>/vars',
-                 endpoint='groupvars')
-api.add_resource(HostsList.HostsAPI, '/eisen/api/v1.0/hosts', endpoint='hosts')
-api.add_resource(HostsList.HostAPI, '/eisen/api/v1.0/host/<int:id>', endpoint='host')
-api.add_resource(HostsList.HostVarsAPI, '/eisen/api/v1.0/host/<int:id>/vars',
-                 endpoint='hostvars')
-api.add_resource(Tasks.TasksAPI, '/eisen/api/v1.0/tasks', endpoint='tasks')
-api.add_resource(Tasks.TaskAPI, '/eisen/api/v1.0/task/<int:id>', endpoint='task')
-api.add_resource(Tasks.TaskRunAPI, '/eisen/api/v1.0/task/<int:id>/run',
-                 endpoint='taskrun')
-api.add_resource(Tasks.TaskResultAPI, '/eisen/api/v1.0/task/<int:id>/result',
-                 endpoint='taskresult')
+    api.add_resource(GroupsList.GroupsAPI, '/eisen/api/v1.0/groups', endpoint='groups')
+    api.add_resource(GroupsList.GroupAPI, '/eisen/api/v1.0/group/<int:id>', endpoint='group')
+    api.add_resource(GroupsList.GroupVarsAPI, '/eisen/api/v1.0/group/<int:id>/vars',
+                     endpoint='groupvars')
+    api.add_resource(HostsList.HostsAPI, '/eisen/api/v1.0/hosts', endpoint='hosts')
+    api.add_resource(HostsList.HostAPI, '/eisen/api/v1.0/host/<int:id>', endpoint='host')
+    api.add_resource(HostsList.HostVarsAPI, '/eisen/api/v1.0/host/<int:id>/vars',
+                     endpoint='hostvars')
+    api.add_resource(Tasks.TasksAPI, '/eisen/api/v1.0/tasks', endpoint='tasks')
+    api.add_resource(Tasks.TaskAPI, '/eisen/api/v1.0/task/<int:id>', endpoint='task')
+    api.add_resource(Tasks.TaskRunAPI, '/eisen/api/v1.0/task/<int:id>/run',
+                     endpoint='taskrun')
+    api.add_resource(Tasks.TaskResultAPI, '/eisen/api/v1.0/task/<int:id>/result',
+                     endpoint='taskresult')
+    return app
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(debug=True, host='0.0.0.0')
