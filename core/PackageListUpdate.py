@@ -19,6 +19,7 @@ from AnsibleWrap import RunTask
 import AnsibleInv
 import traceback
 from mysql_config import start_engine
+from threading import Thread
 
 engine , metadata = start_engine()
 
@@ -31,21 +32,25 @@ def package_update(targetHost, os, command):
     if command == 'installed':
         try:
             print 'get installed package'
-            get_installed_package(targetHost, command_installed, os)
+            thr = Thread(target=get_installed_package, args=[targetHost, command_installed, os])
+            thr.start()
         except Exception as e:
             print(traceback.format_exc())
     if command == 'respository':
         try:
-            get_all_package(targetHost, command_all, os)
+            thr1 = Thread(target=get_all_package, args=[targetHost, command_all, os])
+            thr1.start()
         except Exception as e:
             print(traceback.format_exc())
     if command == 'all':
         try:
-            get_installed_package(targetHost, command_installed, os)
+            thr = Thread(target=get_installed_package, args=[targetHost, command_installed, os])
+            thr.start()
         except Exception as e:
             print(traceback.format_exc())
         try:
-            get_all_package(targetHost, command_all, os)
+            thr1 = Thread(target=get_all_package, args=[targetHost, command_all, os])
+            thr1.start()
         except Exception as e:
             print(traceback.format_exc())
 
