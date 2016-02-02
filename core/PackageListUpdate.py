@@ -71,6 +71,7 @@ def repository_all(os):
     return command
 
 def get_installed_package(target_host_ip, command, target_host_os):
+    delete_user_machine_packages(target_host_ip)
     a= AnsibleInv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     if target_host_os == 'Ubuntu':
@@ -97,7 +98,11 @@ def get_installed_package(target_host_ip, command, target_host_os):
             except Exception, error:
                 print error
     elif target_host_os == 'Gentoo':
-        package_line = packages['contacted'][target_host_ip]['stdout']
+        try:
+            package_line = packages['contacted'][target_host_ip]['stdout']
+        except:
+            print 'ssh problems'
+            return 'ssh problems'
         package_list = package_line.split('\n')
         print package_list
         for package in package_list:
@@ -117,6 +122,7 @@ def get_installed_package(target_host_ip, command, target_host_os):
         print 'failed'
 
 def get_all_package(target_host_ip, command, target_host_os):
+    delete_repository_package_db(target_host_ip)
     a= AnsibleInv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     if target_host_os == 'Ubuntu':
@@ -164,12 +170,27 @@ def get_all_package(target_host_ip, command, target_host_os):
     else:
         print 'failed'
 
+def delete_user_machine_packages(target_host_ip):
+    print '======================================delete: ' \
+          ''+target_host_ip+'=================================================='
+    connection = engine.connect()
+    installed_package = Table('installed_package', metadata, autoload=True,
+                    autoload_with=engine)
+    try:
+        stmt = installed_package.delete().where(
+            installed_package.c.target_host==target_host_ip)
+        connection.execute(stmt).execution_options(autocommit=True)
+        connection.close()
+    except Exception, error:
+        connection.close()
+        print (error)
+
 def update_installed_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
     connection = engine.connect()
+    installed_package = Table('installed_package', metadata, autoload=True,
+                    autoload_with=engine)
     try:
-        installed_package = Table('installed_package', metadata, autoload=True,
-                            autoload_with=engine)
         stmt = installed_package.insert()
         connection.execute(
             stmt,
@@ -197,6 +218,24 @@ def update_repository_package_db(package_name,package_version,package_summary,
             pack_version=package_version,
             pack_summary=package_summary,
             target_host=target_host_ip,
+            pack_sys_id=1
+        ).execution_options(autocommit=True)
+        connection.close()
+    except Exception, error:
+        connection.close()
+        print (error)
+
+def delete_repository_package_db(target_host_ip):
+    print '======================================delete: ' \
+          ''+target_host_ip+'=================================================='
+    connection = engine.connect()
+    try:
+        repository_package = Table('pack_info', metadata, autoload=True,
+                            autoload_with=engine)
+        stmt = repository_package.delete()
+        connection.execute(
+            stmt,
+            repository_package.c.target_host==target_host_ip,
             pack_sys_id=1
         ).execution_options(autocommit=True)
         connection.close()
