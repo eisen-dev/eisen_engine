@@ -21,25 +21,36 @@ def os_install_command(pack):
         module = dispatcher.use_module()
 
         command = 'name='+ pack['packageName']+' state='+state
-        dispatcher.PackageAction(module, pack['targetHost'], command, mod,
+        result_string = dispatcher.PackageAction(module, pack['targetHost'], command, mod,
                                       pack['id'], pack)
+        return result_string
     elif pack['targetOS'] == 'Gentoo':
         print 'loading module portage'
 
-def os_remove_command(distribution):
-    if distribution == 'Ubuntu':
+def os_remove_command(pack):
+    if pack['targetOS'] == 'Ubuntu':
         print 'loading module apt'
-        module = 'apt'
+        mod = 'apt'
         state = 'absent'
-        return module, state
-    elif distribution == 'Gentoo':
+        module = dispatcher.use_module()
+
+        command = 'name='+ pack['packageName']+' state='+state
+        result_string = dispatcher.PackageAction(module, pack['targetHost'], command, mod,
+                                      pack['id'], pack)
+        return result_string
+    elif pack['targetOS'] == 'Gentoo':
         print 'loading module portage'
 
-def os_update_command(distribution):
-    if distribution == 'Ubuntu':
+def os_update_command(pack):
+    if pack['targetOS'] == 'Ubuntu':
         print 'loading module apt'
-        module = 'apt'
+        mod = 'apt'
         state = 'present'
-        return module, state
-    elif distribution == 'Gentoo':
+        module = dispatcher.use_module()
+
+        command = 'name='+ pack['packageName']+' state='+state
+        result_string = dispatcher.PackageAction(module, pack['targetHost'], command, mod,
+                                      pack['id'], pack)
+        return result_string
+    elif pack['targetOS'] == 'Gentoo':
         print 'loading module portage'
