@@ -177,9 +177,4 @@ def PackageAction(module, hosts, command, mod, id, pack):
         time.sleep(1)
     result_string = tasks_package[id].get()
     print result_string
-    db.session.add(package_result(str(result_string), pack['packageName'],
-                                  pack['packageVersion'], pack['targetOS'],
-                                  pack['targetHost'], str(id),
-                   pack['packageAction'], str(result_string)))
-    db.session.commit()
-    return "task started"
+    return result_string
