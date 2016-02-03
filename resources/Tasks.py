@@ -19,6 +19,7 @@ from flask import Flask, jsonify, abort, make_response
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth
 from core import dispatcher
+from threading import Thread
 
 auth = HTTPBasicAuth()
 
@@ -139,7 +140,9 @@ class TaskRunAPI(Resource):
         print mod
         print command
         print hosts
-        task_fields = dispatcher.RunTask(module, hosts, command, mod, id)
+        task_fields = Thread(target=dispatcher.RunTask, args=[module, hosts, command, mod,
+                                                           id])
+        task_fields.start()
         if len(task) == 0:
             abort(404)
         return {'task': (task_fields)}

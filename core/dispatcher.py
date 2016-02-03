@@ -22,10 +22,8 @@ import core.AnsibleInv as ans_inv
 import ansible
 import time
 from sqlalchemy import *
-from mysql_config import start_engine, sendTaskToDb, task_result, package_result
+from mysql_config import start_engine, sendTaskToDb
 from bin import celery_work
-from bin import db
-
 # using global tasks_result dictionary for keeping the async result
 from core import tasks_result
 from core import tasks_package
@@ -132,8 +130,8 @@ def RunTask(module, hosts, command, mod, id):
     inv = ans_inv.get_inv()
     #Starting async task and return
     tasks_result[id] = module.RunTask.delay(hosts, command, mod, inv)
-    result2Db[id] = ResultToDB(tasks_result[id], hosts, id)
-    return "task started"
+    #result2Db[id] = ResultToDB(tasks_result[id], hosts, id)
+    return tasks_result[id]
 
 def ResultTask(id):
     """
@@ -155,8 +153,8 @@ def ResultToDB(task, target_host, id):
     while task.ready() is False:
         time.sleep(1)
     tasks_result = str(task.get())
-    db.session.add(task_result(id, tasks_result, target_host))
-    db.session.commit()
+    #db.session.add(task_result(id, tasks_result, target_host))
+    #db.session.commit()
     return 'done'
 
 def PackageAction(module, hosts, command, mod, id, pack):
@@ -177,4 +175,24 @@ def PackageAction(module, hosts, command, mod, id, pack):
         time.sleep(1)
     result_string = tasks_package[id].get()
     print result_string
+    connection = engine.connect()
+    try:
+        package_result = Table('package_result', metadata, autoload=True,
+                            autoload_with=engine)
+        stmt = package_result.insert()
+        connection.execute(
+            stmt,
+            result_string=str(result_string),
+            packageName=pack['packageName'],
+            packageVersion=pack['packageVersion'],
+            targetOS=pack['targetOS'],
+            targetHost=pack['targetHost'],
+            task_id=id,
+            packageAction=pack['packageAction'],
+            result_short=str(result_string),
+        ).execution_options(autocommit=True)
+        connection.close()
+    except Exception, error:
+        connection.close()
+        print (error)
     return result_string
