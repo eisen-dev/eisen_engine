@@ -38,6 +38,11 @@ pack_fields = {
     'uri': fields.Url('packages')
 }
 
+result_fields = {
+    'Result': fields.String,
+    'uri': fields.Url('packages')
+}
+
 packs = dispatcher.PackageUpdate()
 
 class PackageActionAPI(Resource):
@@ -78,5 +83,6 @@ class PackageActionAPI(Resource):
             'packageVersion': args['packageVersion'],
             'packageAction': args['packageAction'],
         }
-        package_work.package_get(pack)
-        return {'agent': marshal(pack, pack_fields)}, 201
+        result = package_work.package_get(pack)
+        result = {'Result':result}
+        return {'agent': marshal(result, result_fields)}, 201
