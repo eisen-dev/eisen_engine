@@ -1,3 +1,4 @@
 from bin import api
 
-test_app = api.app.test_client()
+app = api.create_app()
+test_app = app.test_client()
