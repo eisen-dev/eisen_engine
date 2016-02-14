@@ -143,9 +143,12 @@ class TaskRunAPI(Resource):
         task_fields = Thread(target=dispatcher.RunTask, args=[module, hosts, command, mod,
                                                            id])
         task_fields.start()
+        task_json = {
+            'started': str(task_fields.getName()),
+        }
         if len(task) == 0:
             abort(404)
-        return {'task': (task_fields)}
+        return {'task': (task_json)}
 
     def put(self, id):
         task = [task for task in tasks if task['id'] == id]
