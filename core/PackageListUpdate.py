@@ -60,6 +60,8 @@ def repository_installed(os):
         command = "dpkg -l | awk 'NR>5{print $0}'"
     elif os == 'Gentoo':
         command = "equery --no-pipe --quiet list '*' -F '$category $name $fullversion'"
+    elif os == 'CentOS':
+        command = "yum list installed | sed '1,2d'"
     else:
         print 'not supported yet'
         command = None
@@ -67,10 +69,12 @@ def repository_installed(os):
 
 def repository_all(os):
     if os == 'Ubuntu':
-        command = "dpkg -l \"*\" | grep -v '^ii'| awk 'NR>5{print $0}'"
+        command = "apt-cache search ."
     elif os == 'Gentoo':
         command = "equery --no-pipe --quiet list -po '*' -F '$category $name " \
                   "$fullversion'"
+    elif os == 'CentOS':
+        command = "yum list | sed '1,2d' "
     else:
         print 'not supported yet'
         command = None
@@ -81,7 +85,11 @@ def get_installed_package(target_host_ip, command, target_host_os):
     a= AnsibleInv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     if target_host_os == 'Ubuntu':
-        dpkg_lines = packages['contacted'][target_host_ip]['stdout']
+        try:
+            dpkg_lines = packages['contacted'][target_host_ip]['stdout']
+        except Exception, error:
+            print error
+            pass
         dpkg_lines = dpkg_lines.split('\n')
         # dividing dpkg output and dividing the package summary from the other
         # information
@@ -99,16 +107,20 @@ def get_installed_package(target_host_ip, command, target_host_os):
                     i+=1
             s = ' '
             summary = s.join(summary)
+            #language = 'jp'
+            #summary = package_summary(language, stripe[1], summary, target_host_os)
             try:
-                update_installed_package_db(stripe[1],stripe[2],summary,target_host_ip,target_host_os)
+                update_installed_package_db(stripe[1], (stripe[2]), summary,
+                                            target_host_ip,target_host_os)
             except Exception, error:
                 print error
+                pass
     elif target_host_os == 'Gentoo':
         try:
             package_line = packages['contacted'][target_host_ip]['stdout']
-        except:
-            print 'ssh problems'
-            return 'ssh problems'
+        except Exception, error:
+            print error
+            pass
         package_list = package_line.split('\n')
         print package_list
         for package in package_list:
@@ -124,6 +136,32 @@ def get_installed_package(target_host_ip, command, target_host_os):
                                          target_host_os)
             except Exception, error:
                 print error
+    elif target_host_os == 'CentOS':
+        try:
+            package_line = packages['contacted'][target_host_ip]['stdout']
+        except:
+            print 'ssh problems'
+            return 'ssh problems'
+        package_list = package_line.split('\n')
+        print package_list
+        for package in package_list:
+            category_name_version = package.split(' ')
+            category_name_version = filter(None, category_name_version)
+            print category_name_version
+            if len(category_name_version) == 1:
+                package_name = category_name_version[0]
+                packge_version = 'none'
+            else:
+                package_name = category_name_version[0]
+                packge_version = category_name_version[1]
+            summary = 'none'
+            try:
+                update_installed_package_db(package_name,packge_version,
+                                         summary,
+                                         target_host_ip,
+                                         target_host_os)
+            except Exception, error:
+                print error
     else:
         print 'failed'
 
@@ -132,26 +170,24 @@ def get_all_package(target_host_ip, command, target_host_os):
     a= AnsibleInv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     if target_host_os == 'Ubuntu':
-        dpkg_lines = packages['contacted'][target_host_ip]['stdout']
+        try:
+            dpkg_lines = packages['contacted'][target_host_ip]['stdout']
+        except Exception, error:
+            print error
+            pass
         dpkg_lines = dpkg_lines.split('\n')
         # dividing dpkg output and dividing the package summary from the other
         # information
         for dpkg_line in dpkg_lines:
-            dpkg_line = dpkg_line.split(' ')
-            stripe = []
-            summary = []
-            i = 0
-            for point in dpkg_line:
-                if point != '' and i<3:
-                    stripe.append(point)
-                    i+=1
-                elif point !='' and i>=3:
-                    summary.append(point)
-                    i+=1
-            s = ' '
-            summary = s.join(summary)
+            package_name_version_summary_type = dpkg_line.split(' - ')
+            package_name = package_name_version_summary_type[0]
+            package_version = u'インストールされてない'
+            package_summary = package_name_version_summary_type[1]
             try:
-                update_repository_package_db(stripe[1],stripe[2],summary,target_host_ip,
+                update_repository_package_db(package_name,
+                                             package_version,
+                                             package_summary,
+                                             target_host_ip,
                                  target_host_os)
             except Exception, error:
                 print error
@@ -172,7 +208,32 @@ def get_all_package(target_host_ip, command, target_host_os):
                                          target_host_os)
             except Exception, error:
                 print error
-
+    elif target_host_os == 'CentOS':
+        try:
+            package_line = packages['contacted'][target_host_ip]['stdout']
+        except:
+            print 'ssh problems'
+            return 'ssh problems'
+        package_list = package_line.split('\n')
+        print package_list
+        for package in package_list:
+            category_name_version = package.split(' ')
+            category_name_version = filter(None, category_name_version)
+            print category_name_version
+            if len(category_name_version) == 1:
+                package_name = category_name_version[0]
+                packge_version = 'none'
+            else:
+                package_name = category_name_version[0]
+                packge_version = category_name_version[1]
+            summary = 'none'
+            try:
+                update_installed_package_db(package_name,packge_version,
+                                         summary,
+                                         target_host_ip,
+                                         target_host_os)
+            except Exception, error:
+                print error
     else:
         print 'failed'
 
@@ -190,6 +251,7 @@ def delete_user_machine_packages(target_host_ip):
     except Exception, error:
         connection.close()
         print (error)
+        pass
 
 def update_installed_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
@@ -248,6 +310,7 @@ def delete_repository_package_db(target_host_ip):
     except Exception, error:
         connection.close()
         print (error)
+        pass
 
 def get_os():
     a= AnsibleInv.get_inv()
@@ -262,9 +325,20 @@ def get_os():
             check_os(stdout,i)
         except Exception, error:
             print ("couldn't connect to"+ i )
+            offline_target_os(i)
+
+def add_description(os, package, language='ja_JP'):
+    print (os, package, language)
+    command_package_description_start = "apt-cache show "
+    command_package_description_end =" | awk '$1 == " \
+                                      "\"Description-en:\" { print substr($0, " \
+                                      "17) }' |head -n 1"
 
 
+def package_summary(language, package_name, summary, os):
+    summary = 'uknown'
 
+    return summary
 
 def check_os(stdout,i):
     if (stdout.find('Ubuntu') is not -1):
@@ -273,6 +347,9 @@ def check_os(stdout,i):
     elif (stdout.find('Gentoo') is not -1):
         submit_os_db('Gentoo', i)
         print('Gentoo',i)
+    elif (stdout.find('CentOS') is not -1):
+        submit_os_db('CentOS', i)
+        print('CentOS',i)
     else:
         submit_os_db('Unknown', i)
         print('Unknown',i)
@@ -281,6 +358,14 @@ def submit_os_db(os, host):
     target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
     stmt = (target_host.update().
         where(target_host.c.ipaddress == bindparam('host')).
-        values(os=bindparam('os'))
+        values(os=bindparam('os'),status_id=bindparam('status_id'))
         )
-    result=engine.execute(stmt, [{"host": host, "os": os}])
+    result=engine.execute(stmt, [{"host": host, "os": os, "status_id" : "online"}])
+
+def offline_target_os(host):
+    target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
+    stmt = (target_host.update().
+        where(target_host.c.ipaddress == bindparam('host')).
+        values(status_id=bindparam('status_id'))
+        )
+    result=engine.execute(stmt, [{"host": host, "status_id": "offline"}])
