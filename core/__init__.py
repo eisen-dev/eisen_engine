@@ -27,6 +27,9 @@ __author__ = 'Eisen'
 tasks_result = {}
 tasks_package = {}
 
+recepies_result = {}
+recepies_package = {}
+
 result2Db = {}
 
 # contain the dynamic inventory

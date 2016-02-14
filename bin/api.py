@@ -29,6 +29,7 @@ from resources import Tasks
 from resources import AgentInfo
 from resources import package_retrive
 from resources import packageAction
+from resources import recipes
 from bin import celery_work
 from bin import db
 from config import Config
@@ -84,6 +85,13 @@ def create_app():
                      endpoint='taskrun')
     api.add_resource(Tasks.TaskResultAPI, '/eisen/api/v1.0/task/<int:id>/result',
                      endpoint='taskresult')
+    api.add_resource(recipes.recipesAPI, '/eisen/api/v1.0/recipes', endpoint='recipes')
+    api.add_resource(recipes.recipeAPI, '/eisen/api/v1.0/recipe/<int:id>',
+                     endpoint='recipe')
+    api.add_resource(recipes.recipeRunAPI, '/eisen/api/v1.0/recipe/<int:id>/run',
+                     endpoint='reciperun')
+    api.add_resource(recipes.recipeResultAPI, '/eisen/api/v1.0/recipe/<int:id>/result',
+                     endpoint='reciperesult')
     return app
 
 if __name__ == '__main__':

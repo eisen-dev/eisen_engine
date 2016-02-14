@@ -27,10 +27,13 @@ from bin import celery_work
 # using global tasks_result dictionary for keeping the async result
 from core import tasks_result
 from core import tasks_package
+from core import recepies_result
+from core import recepies_package
 from core import result2Db
 
 engine , metadata = start_engine()
 connection = engine.connect()
+
 def ModulesList():
     """
     Get list of all available module:
@@ -116,6 +119,42 @@ def TasksList(module):
     tasks = module.TasksStart()
     return tasks
 
+def RecipesList(module):
+    """
+    making the init example task
+    :param module:
+    :return: Json
+    """
+    #TODO (alice): maybe default task is a better name?
+    recipes = module.RecipesStart()
+    return recipes
+
+def RunRecipe(module, playbook_file, id):
+    """
+    Run Task asyncronously
+    """
+    #retriving dynamic inventory from AnsibleInv
+    inv = ans_inv.get_inv()
+    #Starting async task and return
+    recepies_result[id] = module.RunRecepie(inv, playbook_file)
+    #result2Db[id] = ResultToDB(tasks_result[id], hosts, id)
+    return recepies_result[id]
+
+def ResultRecipe(id):
+    """
+
+    :param id:
+    :return: String
+    """
+    # Cheking async task result
+    try:
+        if recepies_result[id] is False:
+            return "not ready yet!"
+        else:
+            return recepies_result[id]
+    except (Exception):
+        return "not ready yet!"
+
 def RunTask(module, hosts, command, mod, id):
     """
     Run Task asyncronously
@@ -182,14 +221,14 @@ def PackageAction(module, hosts, command, mod, id, pack):
         stmt = package_result.insert()
         connection.execute(
             stmt,
-            result_string=str(result_string),
+            result_string=unicode(result_string),
             packageName=pack['packageName'],
-            packageVersion=pack['packageVersion'],
+            packageVersion=unicode(pack['packageVersion']),
             targetOS=pack['targetOS'],
             targetHost=pack['targetHost'],
             task_id=id,
             packageAction=pack['packageAction'],
-            result_short=str(result_string),
+            result_short=unicode(result_string),
         ).execution_options(autocommit=True)
         connection.close()
     except Exception, error:

@@ -178,6 +178,23 @@ def TasksStart():
         tasks.append(task)
     return tasks
 
+def RecipesStart():
+    """
+    example init task
+
+    :rtype: object
+    """
+    recipes = []
+    for i in range(1):
+        task = {
+            'id': i+1,
+            'host': 'localhost',
+            'file' : '/etc/ansible/git.yml',
+            'package' : 'git',
+        }
+        recipes.append(task)
+    return recipes
+
 
 @celery_work.task
 def RunTask(hosts, commands, module, inv):
@@ -214,7 +231,7 @@ def RecepieList():
     """
     pass
 
-def RunRecepie(hosts):
+def RunRecepie(inventory, playbook_file):
     """
     Run playbook
 
@@ -228,17 +245,14 @@ def RunRecepie(hosts):
     runner_cb = callbacks.PlaybookRunnerCallbacks(stats, verbose=utils.VERBOSITY)
 
     pb = PlayBook(
-        playbook='/path/to/main/playbook.yml',
-        host_list=hosts.name,  # Our hosts, the rendered inventory file
-        remote_user='some_user',
+        playbook=playbook_file,
+        inventory=inventory,
         callbacks=playbook_cb,
         runner_callbacks=runner_cb,
         stats=stats,
-        private_key_file='/path/to/key.pem'
     )
 
     results = pb.run()
-    os.remove(hosts.name)
 
     # Ensure on_stats callback is called
     # for callback modules
