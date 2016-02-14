@@ -31,13 +31,15 @@ from resources import package_retrive
 from resources import packageAction
 from bin import celery_work
 from bin import db
+from config import Config
+
 
 def create_app():
     app = Flask(__name__, static_url_path="")
 
     # configuration
-    app.config['SQLALCHEMY_DATABASE_URI']="mysql://root:password@192.168.33.15:3306/eisen"
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
+    app.config['SQLALCHEMY_DATABASE_URI']=Config.SQLALCHEMY_DATABASE_URI
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=Config.SQLALCHEMY_TRACK_MODIFICATIONS
     celery_work.conf.update(app.config)
 
     api = Api(app)
