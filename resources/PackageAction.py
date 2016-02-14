@@ -59,7 +59,7 @@ class PackageActionAPI(Resource):
         self.reqparse.add_argument('packageName', type=str, required=True,
                            help='No task title provided',
                            location='json')
-        self.reqparse.add_argument('packageVersion', type=str,
+        self.reqparse.add_argument('packageVersion', type=unicode,
                            help='No task title provided',
                            location='json')
         self.reqparse.add_argument('packageAction', type=str, required=True,
