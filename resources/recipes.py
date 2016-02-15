@@ -137,9 +137,9 @@ class recipeRunAPI(Resource):
         hosts = task[0]['host']
         file = task[0]['file']
         package = task[0]['package']
-        print file
-        print package
-        print hosts
+        print (file)
+        print (package)
+        print (hosts)
         #task_fields = Thread(target=dispatcher.RunRecepie, args=[module, file, id])
         task_fields = dispatcher.RunRecipe(module, file, id)
         #task_fields.start()

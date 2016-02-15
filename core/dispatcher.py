@@ -213,25 +213,38 @@ def PackageAction(module, hosts, command, mod, id, pack):
     while tasks_package[id].ready() is False:
         time.sleep(1)
     result_string = tasks_package[id].get()
-    print result_string
+    print ('result_string:'+str(result_string))
+    print hosts
     connection = engine.connect()
+    # try:
+    package_result = Table('package_result', metadata, autoload=True,
+                        autoload_with=engine)
+    stmt = package_result.insert()
+    import re
+    pattern = re.compile("[\uD800-\uDFFF].", re.UNICODE)
+    pattern = re.compile("[^\u0000-\uFFFF]", re.UNICODE)
+    re_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
     try:
-        package_result = Table('package_result', metadata, autoload=True,
-                            autoload_with=engine)
-        stmt = package_result.insert()
-        connection.execute(
-            stmt,
-            result_string=unicode(result_string),
-            packageName=pack['packageName'],
-            packageVersion=unicode(pack['packageVersion']),
-            targetOS=pack['targetOS'],
-            targetHost=pack['targetHost'],
-            task_id=id,
-            packageAction=pack['packageAction'],
-            result_short=unicode(result_string),
-        ).execution_options(autocommit=True)
-        connection.close()
-    except Exception, error:
-        connection.close()
-        print (error)
+        filtered_string = re_pattern.sub(u'\uFFFD', result_string['contacted'][hosts]['stdout'])
+    except:
+        filtered_string = result_string['contacted'][hosts]
+    try:
+        result_short = result_string['contacted'][hosts]['module_args']
+    except:
+        result_short = result_string['contacted'][hosts]['invocation']['module_args']
+    connection.execute(
+        stmt,
+        result_string=unicode(filtered_string),
+        packageName=pack['packageName'],
+        packageVersion=pack['packageVersion'],
+        targetOS=pack['targetOS'],
+        targetHost=pack['targetHost'],
+        task_id=id,
+        packageAction=pack['packageAction'],
+        result_short=unicode(result_short),
+    ).execution_options(autocommit=True)
+    connection.close()
+    # except Exception, error:
+    #     connection.close()
+    #     print ('error:' + str(error))
     return result_string
