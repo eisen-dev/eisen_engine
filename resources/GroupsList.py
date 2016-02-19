@@ -1,4 +1,4 @@
-# (c) 2012-2015, Alice Ferrazzi <alice.ferrazzi@gmail.com>
+# (c) 2015, Alice Ferrazzi <alice.ferrazzi@gmail.com>
 #
 # This file is part of Eisen
 #

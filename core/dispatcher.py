@@ -1,4 +1,4 @@
-# (c) 2012-2015, Alice Ferrazzi <alice.ferrazzi@gmail.com>
+# (c) 2015, Alice Ferrazzi <alice.ferrazzi@gmail.com>
 #
 # This file is part of Eisen
 #
@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
+
 import glob
 from genericpath import isfile
 from os.path import dirname, basename
@@ -226,6 +227,8 @@ def PackageAction(module, hosts, command, mod, id, pack):
     re_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
     try:
         filtered_string = re_pattern.sub(u'\uFFFD', result_string['contacted'][hosts]['stdout'])
+        if filtered_string == '' :
+            filtered_string = result_string['contacted'][hosts]
     except:
         filtered_string = result_string['contacted'][hosts]
     try:
@@ -241,8 +244,8 @@ def PackageAction(module, hosts, command, mod, id, pack):
         targetHost=pack['targetHost'],
         task_id=id,
         packageAction=pack['packageAction'],
-        result_short=unicode(result_short),
-    ).execution_options(autocommit=True)
+        result_short=str(result_short),
+    )
     connection.close()
     # except Exception, error:
     #     connection.close()

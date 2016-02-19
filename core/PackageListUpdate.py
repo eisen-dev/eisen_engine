@@ -1,5 +1,5 @@
 # coding=utf-8
-# (c) 2012-2015, Alice Ferrazzi <alice.ferrazzi@gmail.com>
+# (c) 2015, Alice Ferrazzi <alice.ferrazzi@gmail.com>
 #
 # This file is part of Eisen
 #
@@ -25,6 +25,8 @@ from threading import Thread
 engine , metadata = start_engine()
 
 def package_update(targetHost, os, command):
+    if os == 'Raspbian':
+        os = 'Ubuntu'
     print (
         '\n------------------------------------' + targetHost
         + '--' + os + '--' +command+ '--------------------------------\n')
@@ -56,7 +58,8 @@ def package_update(targetHost, os, command):
             print(traceback.format_exc())
 
 def repository_installed(os):
-    if os == 'Ubuntu':
+    print os
+    if os == 'Ubuntu' or os == 'Raspbian':
         command = "dpkg -l | awk 'NR>5{print $0}'"
     elif os == 'Gentoo':
         command = "equery --no-pipe --quiet list '*' -F '$category $name $fullversion'"
@@ -68,7 +71,8 @@ def repository_installed(os):
     return command
 
 def repository_all(os):
-    if os == 'Ubuntu':
+    print os
+    if os == 'Ubuntu' or os == 'Raspbian':
         command = "apt-cache search ."
     elif os == 'Gentoo':
         command = "equery --no-pipe --quiet list -po '*' -F '$category $name " \
@@ -181,7 +185,7 @@ def get_all_package(target_host_ip, command, target_host_os):
         for dpkg_line in dpkg_lines:
             package_name_version_summary_type = dpkg_line.split(' - ')
             package_name = package_name_version_summary_type[0]
-            package_version = u'インストールされてない'
+            package_version = u'-'
             package_summary = package_name_version_summary_type[1]
             try:
                 update_repository_package_db(package_name,
@@ -350,6 +354,9 @@ def check_os(stdout,i):
     elif (stdout.find('CentOS') is not -1):
         submit_os_db('CentOS', i)
         print('CentOS',i)
+    elif (stdout.find('Raspbian') is not -1):
+        submit_os_db('Raspbian', i)
+        print('Raspbian',i)
     else:
         submit_os_db('Unknown', i)
         print('Unknown',i)
