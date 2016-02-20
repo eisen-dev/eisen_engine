@@ -176,25 +176,25 @@ def get_all_package(target_host_ip, command, target_host_os):
     if target_host_os == 'Ubuntu':
         try:
             dpkg_lines = packages['contacted'][target_host_ip]['stdout']
+            dpkg_lines = dpkg_lines.split('\n')
+            # dividing dpkg output and dividing the package summary from the other
+            # information
+            for dpkg_line in dpkg_lines:
+                package_name_version_summary_type = dpkg_line.split(' - ')
+                package_name = package_name_version_summary_type[0]
+                package_version = u'-'
+                package_summary = package_name_version_summary_type[1]
+                try:
+                    update_repository_package_db(package_name,
+                                                 package_version,
+                                                 package_summary,
+                                                 target_host_ip,
+                                     target_host_os)
+                except Exception, error:
+                    print error
         except Exception, error:
             print error
             pass
-        dpkg_lines = dpkg_lines.split('\n')
-        # dividing dpkg output and dividing the package summary from the other
-        # information
-        for dpkg_line in dpkg_lines:
-            package_name_version_summary_type = dpkg_line.split(' - ')
-            package_name = package_name_version_summary_type[0]
-            package_version = u'-'
-            package_summary = package_name_version_summary_type[1]
-            try:
-                update_repository_package_db(package_name,
-                                             package_version,
-                                             package_summary,
-                                             target_host_ip,
-                                 target_host_os)
-            except Exception, error:
-                print error
     elif target_host_os == 'Gentoo':
         package_line = packages['contacted'][target_host_ip]['stdout']
         package_list = package_line.split('\n')
@@ -250,7 +250,7 @@ def delete_user_machine_packages(target_host_ip):
     try:
         stmt = installed_package.delete().where(
             installed_package.c.target_host==target_host_ip)
-        connection.execute(stmt).execution_options(autocommit=True)
+        connection.execute(stmt)
         connection.close()
     except Exception, error:
         connection.close()
@@ -271,7 +271,7 @@ def update_installed_package_db(package_name,package_version,package_summary,
             installed_pack_summary=package_summary,
             target_host=target_host_ip,
             pack_sys_id=1
-        ).execution_options(autocommit=True)
+        )
         connection.close()
     except Exception, error:
         connection.close()
@@ -291,7 +291,7 @@ def update_repository_package_db(package_name,package_version,package_summary,
             pack_summary=package_summary,
             target_host=target_host_ip,
             pack_sys_id=1
-        ).execution_options(autocommit=True)
+        )
         connection.close()
     except Exception, error:
         connection.close()
