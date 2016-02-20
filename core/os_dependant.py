@@ -47,6 +47,9 @@ def os_install_command(pack):
         print 'loading module portage'
 
 def os_remove_command(pack):
+    if pack['targetOS'] == 'Raspbian':
+        pack['targetOS'] = 'Ubuntu'
+
     if pack['targetOS'] == 'Ubuntu':
         print 'loading module apt'
         mod = 'apt'
@@ -61,6 +64,8 @@ def os_remove_command(pack):
         print 'loading module portage'
 
 def os_update_command(pack):
+    if pack['targetOS'] == 'Raspbian':
+        pack['targetOS'] = 'Ubuntu'
     if pack['targetOS'] == 'Ubuntu':
         print 'loading module apt'
         mod = 'apt'
