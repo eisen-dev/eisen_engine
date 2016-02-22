@@ -1,5 +1,5 @@
 celery
-flask
+Flask
 Flask-HTTPAuth
 Flask-RESTful
 Flask-SQLAlchemy
