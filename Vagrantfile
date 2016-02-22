@@ -76,7 +76,7 @@ Vagrant.configure(2) do |config|
     echo "adding localhost to /etc/ansible/hosts"
     mkdir -p /etc/ansible/group_vars/
     echo -e "[vagrant]\nlocalhost" > /etc/ansible/hosts
-    echo -e "ansible_user_ssh: vagrant\nansible_pass_ssh: vagrant" > /etc/ansible/group_vars/vagrant
+    echo -e "ansible_ssh_user: vagrant\nansible_ssh_pass: vagrant" > /etc/ansible/group_vars/vagrant
 
 
     echo "adding StrictHostKeyChecking no to .ssh/config"
