@@ -4,7 +4,7 @@ using ansible, is interacting with Eisen Frontend but can also be used as API fo
  project.  
   
 ####Badge:  
-[![Code Climate](https://codeclimate.com/github/eisen-dev/eisen_engine/badges/gpa.svg)](https://codeclimate.com/github/eisen-dev/eisen_engine)[![Dependency Status](https://www.versioneye.com/user/projects/56a058922c2fab00250001bf/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56a058922c2fab00250001bf)  
+[![Code Climate](https://codeclimate.com/github/eisen-dev/eisen_engine/badges/gpa.svg)](https://codeclimate.com/github/eisen-dev/eisen_engine)[![Dependency Status](https://www.versioneye.com/user/projects/56a058922c2fab00250001bf/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56a058922c2fab00250001bf) [![Build Status](https://travis-ci.org/eisen-dev/eisen_engine.svg?branch=master)](https://travis-ci.org/eisen-dev/eisen_engine)  
 [![ZenHub] (https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png)] (https://zenhub.io)   
 ####Got question?  
 Join us on
