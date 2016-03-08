@@ -1,6 +1,6 @@
 # Eisen Engine
 Eisen Engine is a modular Restful API for remote package management and job task manager 
-using ansible, is interacting with Eisen Frontend but can be also be used as API for other
+using ansible, is interacting with Eisen Frontend but can also be used as API for other
  project.  
   
 ####Badge:  
