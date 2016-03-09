@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="https://github.com/eisen-dev/eisen_docs/raw/master/images/eisen-readme-header.png" alt="Eisen">
+</p>
 # Eisen Engine
 Eisen Engine is a modular Restful API for remote package management and job task manager 
 using ansible, is interacting with Eisen Frontend but can also be used as API for other
