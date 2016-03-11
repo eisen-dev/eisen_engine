@@ -80,7 +80,7 @@ class recipesAPI(Resource):
         task = {
             'id': recipes[-1]['id'] + 1,
             'host': args['host'],
-            'file': self.html_decode(args['command']),
+            'file': self.html_decode(args['file']),
             'package': args['package'],
         }
         recipes.append(task)
