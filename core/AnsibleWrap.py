@@ -182,6 +182,7 @@ def RecipesStart():
     """
     example init task
 
+
     :rtype: object
     """
     recipes = []
@@ -189,7 +190,7 @@ def RecipesStart():
         task = {
             'id': i+1,
             'host': 'localhost',
-            'file' : '/etc/ansible/git.yml',
+            'file' : '/vagrant/vagrant/test_recipe.yml',
             'package' : 'git',
         }
         recipes.append(task)
