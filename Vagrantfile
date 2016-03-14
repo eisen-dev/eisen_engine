@@ -83,6 +83,7 @@ Vagrant.configure(2) do |config|
     echo "adding StrictHostKeyChecking no to .ssh/config"
     echo -e "Host *\n StrictHostKeyChecking no" > /home/vagrant/.ssh/config
     chown vagrant:vagrant /home/vagrant/.ssh/config
+    mkdir /root/.ssh/
     sudo touch /root/.ssh/config
     sudo echo -e "Host *\n StrictHostKeyChecking no" > /root/.ssh/config
 
@@ -90,5 +91,9 @@ Vagrant.configure(2) do |config|
     sudo echo -e "[inet_http_server]\nport=9001" >> /etc/supervisor/supervisord.conf
     ln -s /vagrant/vagrant/celeryd.conf /etc/supervisor/conf.d/celeryd.conf
     ln -s /vagrant/vagrant/engine.conf /etc/supervisor/conf.d/engine.conf
+
+    echo "restart supervisor"
+    service supervisor stop
+    service supervisor start
   SHELL
 end
