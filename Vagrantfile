@@ -24,6 +24,7 @@ Vagrant.configure(2) do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "forwarded_port", guest: 5000, host: 5000
+  config.vm.network "forwarded_port", guest: 9001, host: 9001
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -70,7 +71,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get update
 
     echo "installing needed packages"
-    sudo apt-get install -y python-pip python-crypto python-dev rabbitmq-server sshpass python-mysqldb
+    sudo apt-get install -y python-pip python-crypto python-dev rabbitmq-server sshpass python-mysqldb supervisor
     sudo pip install -r /vagrant/requirements.txt
 
     echo "adding localhost to /etc/ansible/hosts"
@@ -85,9 +86,9 @@ Vagrant.configure(2) do |config|
     sudo touch /root/.ssh/config
     sudo echo -e "Host *\n StrictHostKeyChecking no" > /root/.ssh/config
 
-    echo "Starting celeryworker"
-    chmod +x /vagrant/celeryworker.sh
-    # looks like bash is needed ...
-    C_FORCE_ROOT="true" nohup bash /vagrant/celeryworker.sh &
+    echo "setting supervisor port localhost:9001"
+    sudo echo -e "[inet_http_server]\nport=9001" >> /etc/supervisor/supervisord.conf
+    ln -s /vagrant/vagrant/celeryd.conf /etc/supervisor/conf.d/celeryd.conf
+    ln -s /vagrant/vagrant/engine.conf /etc/supervisor/conf.d/engine.conf
   SHELL
 end
