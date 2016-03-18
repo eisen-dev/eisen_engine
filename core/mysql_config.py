@@ -17,10 +17,11 @@
 
 from sqlalchemy import *
 from bin import db
+from config import Config
 import time
 
 def start_engine():
-    engine = create_engine('mysql://root:password@192.168.33.15:3306/eisen?charset=utf8',
+    engine = create_engine(Config.SQLALCHEMY_DATABASE_URI,
                        echo=True)
     metadata = MetaData(bind=engine)
     return engine, metadata
