@@ -24,7 +24,6 @@ Vagrant.configure(2) do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "forwarded_port", guest: 5000, host: 5000
-  config.vm.network "forwarded_port", guest: 9001, host: 9001
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -71,7 +70,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get update
 
     echo "installing needed packages"
-    sudo apt-get install -y python-pip python-crypto python-dev rabbitmq-server sshpass python-mysqldb supervisor
+    sudo apt-get install -y python-pip python-crypto python-dev rabbitmq-server sshpass python-mysqldb
     sudo pip install -r /vagrant/requirements.txt
 
     echo "adding localhost to /etc/ansible/hosts"
