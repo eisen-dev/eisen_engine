@@ -9,7 +9,7 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     CELERY_BROKER_URL = 'amqp://guest@localhost//'
     CELERY_RESULT_BACKEND = 'amqp'
-    SQLALCHEMY_DATABASE_URI="mysql://root:password@192.168.33.15:3306/eisen"
+    SQLALCHEMY_DATABASE_URI="mysql://root:password@192.168.33.15:3306/eisen?charset=utf8"
     SQLALCHEMY_TRACK_MODIFICATIONS=False
 
     @staticmethod
