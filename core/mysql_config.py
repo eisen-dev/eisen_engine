@@ -16,7 +16,6 @@
 # along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
 
 from sqlalchemy import *
-from bin import db
 from config import Config
 import time
 

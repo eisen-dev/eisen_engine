@@ -31,7 +31,6 @@ from resources import package_retrive
 from resources import packageAction
 from resources import recipes
 from bin import celery_work
-from bin import db
 from config import Config
 
 
@@ -39,13 +38,10 @@ def create_app():
     app = Flask(__name__, static_url_path="")
 
     # configuration
-    app.config['SQLALCHEMY_DATABASE_URI']=Config.SQLALCHEMY_DATABASE_URI
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=Config.SQLALCHEMY_TRACK_MODIFICATIONS
     celery_work.conf.update(app.config)
 
     api = Api(app)
     auth = HTTPBasicAuth()
-    db.init_app(app)
 
     @auth.get_password
     def get_password(username):
