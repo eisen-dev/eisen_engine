@@ -1,4 +1,4 @@
-0.1.0 / 2016-03-24
+1.0.0 / 2016-03-24
 ==================
 
 * Fixed mysql init started in two different place
