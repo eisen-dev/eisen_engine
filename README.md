@@ -15,3 +15,4 @@ Join us on
   
 For know more please read:  
 [Eisen Documentation](https://github.com/eisen-dev/eisen_docs)  
+[Api Documentation](https://github.com/eisen-dev/eisen_docs/blob/master/api.md)  
