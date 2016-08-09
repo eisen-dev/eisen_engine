@@ -18,8 +18,8 @@
 import glob
 from genericpath import isfile
 from os.path import dirname, basename
-import AnsibleWrap
-import core.AnsibleInv as ans_inv
+import AnsibleV1Wrap
+import core.AnsibleV1Inv as ans_inv
 import ansible
 import time
 from sqlalchemy import *
@@ -90,7 +90,7 @@ def PackageUpdate(module=None):
 
 def use_module():
     # API chooser
-    module = AnsibleWrap
+    module = AnsibleV1Wrap
     return module
 
 def HostsList(module):

@@ -21,8 +21,8 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..' )
 from flask import Flask, jsonify, abort, make_response
-from flask.ext.restful import Api, Resource, reqparse, fields, marshal
-from flask.ext.httpauth import HTTPBasicAuth
+from flask_restful  import Api, Resource, reqparse, fields, marshal
+from flask_httpauth import HTTPBasicAuth
 from resources import GroupsList
 from resources import HostsList
 from resources import Tasks
