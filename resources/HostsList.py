@@ -19,7 +19,7 @@ from flask import Flask, jsonify, abort, make_response
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 from flask.ext.httpauth import HTTPBasicAuth
 from core import dispatcher
-import core.AnsibleInv as ans_inv
+import core.AnsibleV1Inv as ans_inv
 auth = HTTPBasicAuth()
 
 #TODO make password auth to be same for all resource

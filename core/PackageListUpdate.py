@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
 from sqlalchemy import *
-from AnsibleWrap import RunTask
-import AnsibleInv
+from AnsibleV1Wrap import RunTask
+import AnsibleV1Inv
 import traceback
 from mysql_config import start_engine
 from threading import Thread
@@ -86,7 +86,7 @@ def repository_all(os):
 
 def get_installed_package(target_host_ip, command, target_host_os):
     delete_user_machine_packages(target_host_ip)
-    a= AnsibleInv.get_inv()
+    a= AnsibleV1Inv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     if target_host_os == 'Ubuntu':
         try:
@@ -171,7 +171,7 @@ def get_installed_package(target_host_ip, command, target_host_os):
 
 def get_all_package(target_host_ip, command, target_host_os):
     delete_repository_package_db(target_host_ip)
-    a= AnsibleInv.get_inv()
+    a= AnsibleV1Inv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     if target_host_os == 'Ubuntu':
         try:
@@ -317,7 +317,7 @@ def delete_repository_package_db(target_host_ip):
         pass
 
 def get_os():
-    a= AnsibleInv.get_inv()
+    a= AnsibleV1Inv.get_inv()
     host = a.list_hosts()
     for i in host:
         version = RunTask(host,"bash -c 'cat /etc/*{release,version}'","shell",a)

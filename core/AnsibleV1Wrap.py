@@ -20,7 +20,7 @@ import ansible
 from ansible.playbook import PlayBook
 from ansible import callbacks
 from ansible import utils
-import AnsibleInv
+import AnsibleV1Inv
 import os
 # we get the global celery worker from bin folder
 from bin import celery_work
@@ -75,7 +75,7 @@ def HostsList():
     """
     hosts = []
     a = inventory.Inventory()
-    a= AnsibleInv.get_inv()
+    a= AnsibleV1Inv.get_inv()
     data = a.list_hosts()
     # data example
     # ['192.168.233.129', '192.168.233.131', '192.168.0.211']
@@ -112,7 +112,7 @@ def HostVarsList(id):
     # init for contain the variable values
     vars = []
     # get the dynamic inventory
-    a = AnsibleInv.get_inv()
+    a = AnsibleV1Inv.get_inv()
     # check for host
     data = a.list_hosts()
     host_vars = a.get_host(data[id]).get_variables()
