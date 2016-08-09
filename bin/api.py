@@ -28,7 +28,7 @@ from resources import HostsList
 from resources import Tasks
 from resources import AgentInfo
 from resources import package_retrive
-from resources import packageAction
+from resources import PackageAction
 from resources import recipes
 from bin import celery_work
 from config import Config
@@ -64,7 +64,7 @@ def create_app():
                      endpoint='package_retrive')
     api.add_resource(package_retrive.OsCheckAPI, '/eisen/api/v1.0/os_check',
                      endpoint='os_check')
-    api.add_resource(packageAction.PackageActionAPI, '/eisen/api/v1.0/packages',
+    api.add_resource(PackageAction.PackageActionAPI, '/eisen/api/v1.0/packages',
                      endpoint='packages')
 
     api.add_resource(GroupsList.GroupsAPI, '/eisen/api/v1.0/groups', endpoint='groups')
