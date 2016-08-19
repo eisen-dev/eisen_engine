@@ -16,7 +16,7 @@
 # along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
 
 from sqlalchemy import *
-from config import Config
+from bin.config_module import Config
 import time
 
 def start_engine():
