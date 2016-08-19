@@ -2,7 +2,5 @@ language: python
 python:
 - '2.7'
 install: "pip install -r requirements.txt"
-script: 
+script:
 - python bin/eisen_engine &
-- ./celeryworker.sh &
-- nosetests tests/
