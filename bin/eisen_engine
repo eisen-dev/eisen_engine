@@ -1,4 +1,4 @@
-#!flask/bin/python
+#!/usr/bin/env python
 # (c) 2015, Alice Ferrazzi <alice.ferrazzi@gmail.com>
 #
 # This file is part of Eisen
@@ -31,8 +31,6 @@ from resources import package_retrive
 from resources import PackageAction
 from resources import recipes
 from bin import celery_work
-from config import Config
-
 
 def create_app():
     app = Flask(__name__, static_url_path="")

@@ -18,15 +18,27 @@
 from distutils.core import setup
 
 setup(
-    name='eisen_agent',
+    name='eisen_engine',
     version='0.0.1',
-    packages=['core'],
-    url='',
+    packages=['bin','core','resources'],
+    scripts = ["bin/eisen_engine"],
+    url='https://github.com/eisen-dev/eisen_engine',
     license='GPL2',
+    classifiers=[
+        'Development Status :: 5 - Stable',
+        'Intended Audience :: Developers',
+        'Topic :: Software Development :: Build Tools',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+    ],
     author='Alice Ferrazzi',
     author_email='alice.ferrazzi@gmail.com',
-    description='eisen agent',
+    description='eisen engine',
     requires=['Flask', 'sqlalchemy'],
     test_require=['nose'],
-    test_suite='nose.collector'
+    test_suite='nose.collector',
+    include_package_data=True,
+    zip_safe=False
 )
