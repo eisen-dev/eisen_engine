@@ -24,6 +24,7 @@ from threading import Thread
 
 engine , metadata = start_engine()
 
+
 def package_update(targetHost, os, command):
     if os == 'Raspbian':
         os = 'Ubuntu'
@@ -57,6 +58,7 @@ def package_update(targetHost, os, command):
         except Exception as e:
             print(traceback.format_exc())
 
+
 def repository_installed(os):
     print os
     if os == 'Ubuntu' or os == 'Raspbian':
@@ -69,6 +71,7 @@ def repository_installed(os):
         print 'not supported yet'
         command = None
     return command
+
 
 def repository_all(os):
     print os
@@ -83,6 +86,7 @@ def repository_all(os):
         print 'not supported yet'
         command = None
     return command
+
 
 def get_installed_package(target_host_ip, command, target_host_os):
     delete_user_machine_packages(target_host_ip)
@@ -169,6 +173,7 @@ def get_installed_package(target_host_ip, command, target_host_os):
     else:
         print 'failed'
 
+
 def get_all_package(target_host_ip, command, target_host_os):
     delete_repository_package_db(target_host_ip)
     a= AnsibleV1Inv.get_inv()
@@ -241,6 +246,7 @@ def get_all_package(target_host_ip, command, target_host_os):
     else:
         print 'failed'
 
+
 def delete_user_machine_packages(target_host_ip):
     print '======================================delete: ' \
           ''+target_host_ip+'=================================================='
@@ -256,6 +262,7 @@ def delete_user_machine_packages(target_host_ip):
         connection.close()
         print (error)
         pass
+
 
 def update_installed_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
@@ -277,6 +284,7 @@ def update_installed_package_db(package_name,package_version,package_summary,
         connection.close()
         print (error)
 
+
 def update_repository_package_db(package_name,package_version,package_summary,
                                 target_host_ip, target_host_os):
     connection = engine.connect()
@@ -297,6 +305,7 @@ def update_repository_package_db(package_name,package_version,package_summary,
         connection.close()
         print (error)
 
+
 def delete_repository_package_db(target_host_ip):
     print '======================================delete: ' \
           ''+target_host_ip+'=================================================='
@@ -316,6 +325,7 @@ def delete_repository_package_db(target_host_ip):
         print (error)
         pass
 
+
 def get_os():
     a= AnsibleV1Inv.get_inv()
     host = a.list_hosts()
@@ -331,6 +341,7 @@ def get_os():
             print ("couldn't connect to"+ i )
             offline_target_os(i)
 
+
 def add_description(os, package, language='ja_JP'):
     print (os, package, language)
     command_package_description_start = "apt-cache show "
@@ -343,6 +354,7 @@ def package_summary(language, package_name, summary, os):
     summary = 'uknown'
 
     return summary
+
 
 def check_os(stdout,i):
     if (stdout.find('Ubuntu') is not -1):
@@ -361,6 +373,7 @@ def check_os(stdout,i):
         submit_os_db('Unknown', i)
         print('Unknown',i)
 
+
 def submit_os_db(os, host):
     target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
     stmt = (target_host.update().
@@ -368,6 +381,7 @@ def submit_os_db(os, host):
         values(os=bindparam('os'),status_id=bindparam('status_id'))
         )
     result=engine.execute(stmt, [{"host": host, "os": os, "status_id" : "online"}])
+
 
 def offline_target_os(host):
     target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
