@@ -19,11 +19,7 @@ from sqlalchemy import *
 from AnsibleV1Wrap import RunTask
 import AnsibleV1Inv
 import traceback
-from mysql_config import start_engine
 from threading import Thread
-
-engine , metadata = start_engine()
-
 
 def package_update(targetHost, os, command):
     if os == 'Raspbian':
@@ -89,7 +85,6 @@ def repository_all(os):
 
 
 def get_installed_package(target_host_ip, command, target_host_os):
-    delete_user_machine_packages(target_host_ip)
     a= AnsibleV1Inv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     if target_host_os == 'Ubuntu':
@@ -117,12 +112,6 @@ def get_installed_package(target_host_ip, command, target_host_os):
             summary = s.join(summary)
             #language = 'jp'
             #summary = package_summary(language, stripe[1], summary, target_host_os)
-            try:
-                update_installed_package_db(stripe[1], (stripe[2]), summary,
-                                            target_host_ip,target_host_os)
-            except Exception, error:
-                print error
-                pass
     elif target_host_os == 'Gentoo':
         try:
             package_line = packages['contacted'][target_host_ip]['stdout']
@@ -137,13 +126,6 @@ def get_installed_package(target_host_ip, command, target_host_os):
             package_name = category_name_version[1]
             packge_version = category_name_version[2]
             summary = 'none'
-            try:
-                update_installed_package_db(package_category+'/'+package_name,packge_version,
-                                         summary,
-                                         target_host_ip,
-                                         target_host_os)
-            except Exception, error:
-                print error
     elif target_host_os == 'CentOS':
         try:
             package_line = packages['contacted'][target_host_ip]['stdout']
@@ -163,19 +145,11 @@ def get_installed_package(target_host_ip, command, target_host_os):
                 package_name = category_name_version[0]
                 packge_version = category_name_version[1]
             summary = 'none'
-            try:
-                update_installed_package_db(package_name,packge_version,
-                                         summary,
-                                         target_host_ip,
-                                         target_host_os)
-            except Exception, error:
-                print error
     else:
         print 'failed'
 
 
 def get_all_package(target_host_ip, command, target_host_os):
-    delete_repository_package_db(target_host_ip)
     a= AnsibleV1Inv.get_inv()
     packages = RunTask(target_host_ip, command,"shell",a)
     if target_host_os == 'Ubuntu':
@@ -189,14 +163,6 @@ def get_all_package(target_host_ip, command, target_host_os):
                 package_name = package_name_version_summary_type[0]
                 package_version = u'-'
                 package_summary = package_name_version_summary_type[1]
-                try:
-                    update_repository_package_db(package_name,
-                                                 package_version,
-                                                 package_summary,
-                                                 target_host_ip,
-                                     target_host_os)
-                except Exception, error:
-                    print error
         except Exception, error:
             print error
             pass
@@ -209,14 +175,6 @@ def get_all_package(target_host_ip, command, target_host_os):
             package_name = category_name_version[1]
             packge_version = category_name_version[2]
             summary = 'none'
-            try:
-                update_repository_package_db(package_category+'/'+package_name,
-                                              packge_version,
-                                         summary,
-                                         target_host_ip,
-                                         target_host_os)
-            except Exception, error:
-                print error
     elif target_host_os == 'CentOS':
         try:
             package_line = packages['contacted'][target_host_ip]['stdout']
@@ -236,94 +194,8 @@ def get_all_package(target_host_ip, command, target_host_os):
                 package_name = category_name_version[0]
                 packge_version = category_name_version[1]
             summary = 'none'
-            try:
-                update_installed_package_db(package_name,packge_version,
-                                         summary,
-                                         target_host_ip,
-                                         target_host_os)
-            except Exception, error:
-                print error
     else:
         print 'failed'
-
-
-def delete_user_machine_packages(target_host_ip):
-    print '======================================delete: ' \
-          ''+target_host_ip+'=================================================='
-    connection = engine.connect()
-    installed_package = Table('installed_package', metadata, autoload=True,
-                    autoload_with=engine)
-    try:
-        stmt = installed_package.delete().where(
-            installed_package.c.target_host==target_host_ip)
-        connection.execute(stmt)
-        connection.close()
-    except Exception, error:
-        connection.close()
-        print (error)
-        pass
-
-
-def update_installed_package_db(package_name,package_version,package_summary,
-                                target_host_ip, target_host_os):
-    connection = engine.connect()
-    installed_package = Table('installed_package', metadata, autoload=True,
-                    autoload_with=engine)
-    try:
-        stmt = installed_package.insert()
-        connection.execute(
-            stmt,
-            installed_pack_name=package_name,
-            installed_pack_version=package_version,
-            installed_pack_summary=package_summary,
-            target_host=target_host_ip,
-            pack_sys_id=1
-        )
-        connection.close()
-    except Exception, error:
-        connection.close()
-        print (error)
-
-
-def update_repository_package_db(package_name,package_version,package_summary,
-                                target_host_ip, target_host_os):
-    connection = engine.connect()
-    try:
-        repository_package = Table('pack_info', metadata, autoload=True,
-                            autoload_with=engine)
-        stmt = repository_package.insert()
-        connection.execute(
-            stmt,
-            pack_name=package_name,
-            pack_version=package_version,
-            pack_summary=package_summary,
-            target_host=target_host_ip,
-            pack_sys_id=1
-        )
-        connection.close()
-    except Exception, error:
-        connection.close()
-        print (error)
-
-
-def delete_repository_package_db(target_host_ip):
-    print '======================================delete: ' \
-          ''+target_host_ip+'=================================================='
-    connection = engine.connect()
-    try:
-        repository_package = Table('pack_info', metadata, autoload=True,
-                            autoload_with=engine)
-        stmt = repository_package.delete()
-        connection.execute(
-            stmt,
-            repository_package.c.target_host==target_host_ip,
-            pack_sys_id=1
-        ).execution_options(autocommit=True)
-        connection.close()
-    except Exception, error:
-        connection.close()
-        print (error)
-        pass
 
 
 def get_os():
@@ -336,10 +208,8 @@ def get_os():
         try:
             stdout = version['contacted'][str(i)]['stdout']
             print stdout
-            check_os(stdout,i)
         except Exception, error:
             print ("couldn't connect to"+ i )
-            offline_target_os(i)
 
 
 def add_description(os, package, language='ja_JP'):
@@ -354,39 +224,3 @@ def package_summary(language, package_name, summary, os):
     summary = 'uknown'
 
     return summary
-
-
-def check_os(stdout,i):
-    if (stdout.find('Ubuntu') is not -1):
-        submit_os_db('Ubuntu',i)
-        print('Ubuntu',i)
-    elif (stdout.find('Gentoo') is not -1):
-        submit_os_db('Gentoo', i)
-        print('Gentoo',i)
-    elif (stdout.find('CentOS') is not -1):
-        submit_os_db('CentOS', i)
-        print('CentOS',i)
-    elif (stdout.find('Raspbian') is not -1):
-        submit_os_db('Raspbian', i)
-        print('Raspbian',i)
-    else:
-        submit_os_db('Unknown', i)
-        print('Unknown',i)
-
-
-def submit_os_db(os, host):
-    target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
-    stmt = (target_host.update().
-        where(target_host.c.ipaddress == bindparam('host')).
-        values(os=bindparam('os'),status_id=bindparam('status_id'))
-        )
-    result=engine.execute(stmt, [{"host": host, "os": os, "status_id" : "online"}])
-
-
-def offline_target_os(host):
-    target_host = Table('target_host', metadata, autoload=True, autoload_with=engine)
-    stmt = (target_host.update().
-        where(target_host.c.ipaddress == bindparam('host')).
-        values(status_id=bindparam('status_id'))
-        )
-    result=engine.execute(stmt, [{"host": host, "status_id": "offline"}])

@@ -23,7 +23,6 @@ import core.AnsibleV1Inv as ans_inv
 import ansible
 import time
 from sqlalchemy import *
-from mysql_config import start_engine, sendTaskToDb
 from bin import celery_work
 # using global tasks_result dictionary for keeping the async result
 from core import tasks_result
@@ -31,9 +30,6 @@ from core import tasks_package
 from core import recepies_result
 from core import recepies_package
 from core import result2Db
-
-engine , metadata = start_engine()
-connection = engine.connect()
 
 def ModulesList():
     """
@@ -216,11 +212,7 @@ def PackageAction(module, hosts, command, mod, id, pack):
     result_string = tasks_package[id].get()
     print ('result_string:'+str(result_string))
     print hosts
-    connection = engine.connect()
     # try:
-    package_result = Table('package_result', metadata, autoload=True,
-                        autoload_with=engine)
-    stmt = package_result.insert()
     import re
     pattern = re.compile("[\uD800-\uDFFF].", re.UNICODE)
     pattern = re.compile("[^\u0000-\uFFFF]", re.UNICODE)
@@ -235,19 +227,19 @@ def PackageAction(module, hosts, command, mod, id, pack):
         result_short = result_string['contacted'][hosts]['module_args']
     except:
         result_short = result_string['contacted'][hosts]['invocation']['module_args']
-    connection.execute(
-        stmt,
-        result_string=unicode(filtered_string),
-        packageName=pack['packageName'],
-        packageVersion=pack['packageVersion'],
-        targetOS=pack['targetOS'],
-        targetHost=pack['targetHost'],
-        task_id=id,
-        packageAction=pack['packageAction'],
-        result_short=str(result_short),
-    )
-    connection.close()
-    # except Exception, error:
-    #     connection.close()
-    #     print ('error:' + str(error))
+    # connection.execute(
+    #     stmt,
+    #     result_string=unicode(filtered_string),
+    #     packageName=pack['packageName'],
+    #     packageVersion=pack['packageVersion'],
+    #     targetOS=pack['targetOS'],
+    #     targetHost=pack['targetHost'],
+    #     task_id=id,
+    #     packageAction=pack['packageAction'],
+    #     result_short=str(result_short),
+    # )
+    # connection.close()
+    # # except Exception, error:
+    # #     connection.close()
+    # #     print ('error:' + str(error))
     return result_string

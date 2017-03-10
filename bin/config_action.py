@@ -34,8 +34,6 @@ def write():
     config['SQLALCHEMY']['SQLALCHEMY_RECORD_QUERIES'] = "True"
     config['CELERY']['CELERY_BROKER_URL'] = 'amqp://guest@localhost//'
     config['CELERY']['CELERY_RESULT_BACKEND'] = 'amqp'
-    config['SQLALCHEMY']['SQLALCHEMY_DATABASE_URI'] = "mysql://root:password@127.0.0.1:3306/eisen?charset=utf8"
-    config['SQLALCHEMY']['SQLALCHEMY_TRACK_MODIFICATIONS'] = "False"
 
     with open(".eisen_engine.conf", 'w') as f:
         config.write(f)
