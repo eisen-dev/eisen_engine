@@ -15,8 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Eisen.  If not, see <http://www.gnu.org/licenses/>.
-
-from bin import eisen_engine
+import imp
+eisen_engine = imp.load_source('create_app','../bin/eisen_engine')
 
 app = eisen_engine.create_app()
 test_app = app.test_client()
